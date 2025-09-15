@@ -5,7 +5,6 @@ import Map from './Map';
 import AdvancedFilters from './AdvancedFilters';
 import CleanerListRow from './CleanerListRow';
 import InstantBookModal from './InstantBookModal'; // New
-import { CLEANERS_DATA } from '../constants';
 import { getCleanerBadge, calculateAvailableSlots } from '../utils'; // New
 import type { Cleaner, Booking, User } from '../types'; // New
 
@@ -28,9 +27,10 @@ interface HomePageProps {
     onBookingCreate: (booking: Booking) => void;
     bookings: Booking[];
     user: User;
+    cleaners: Cleaner[];
 }
 
-const HomePage: React.FC<HomePageProps> = ({ onNavigate, searchTerm, onBookingCreate, bookings, user }) => {
+const HomePage: React.FC<HomePageProps> = ({ onNavigate, searchTerm, onBookingCreate, bookings, user, cleaners }) => {
   const [locationStatus, setLocationStatus] = useState<string>('loading');
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
@@ -54,14 +54,14 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, searchTerm, onBookingCr
 
   const allServices = useMemo(() => {
     const servicesSet = new Set<string>();
-    CLEANERS_DATA.forEach(cleaner => {
+    cleaners.forEach(cleaner => {
         cleaner.services.forEach(service => servicesSet.add(service));
     });
     return Array.from(servicesSet).sort();
-  }, []);
+  }, [cleaners]);
 
   const filteredAndSortedCleaners = useMemo(() => {
-    let cleaners = CLEANERS_DATA.map(cleaner => ({
+    let filteredCleaners = cleaners.map(cleaner => ({
         ...cleaner,
         distance: userLocation ? calculateDistance(userLocation.lat, userLocation.lng, cleaner.location.lat, cleaner.location.lng) : undefined,
         badge: getCleanerBadge(cleaner),
@@ -70,7 +70,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, searchTerm, onBookingCr
     const lowercasedSearchTerm = searchTerm.toLowerCase();
 
     // Apply filters
-    cleaners = cleaners.filter(c => {
+    filteredCleaners = filteredCleaners.filter(c => {
         // Search term
         if (lowercasedSearchTerm) {
             const nameMatch = c.name.toLowerCase().includes(lowercasedSearchTerm);
@@ -108,7 +108,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, searchTerm, onBookingCr
     });
 
     // Apply sorting
-    cleaners.sort((a, b) => {
+    filteredCleaners.sort((a, b) => {
         switch (sortBy) {
             case 'price_asc':
                 return a.hourlyRate - b.hourlyRate;
@@ -123,8 +123,8 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, searchTerm, onBookingCr
         }
     });
 
-    return cleaners;
-  }, [userLocation, filters, sortBy, favoritedCleanerIds, searchTerm, bookings]);
+    return filteredCleaners;
+  }, [userLocation, filters, sortBy, favoritedCleanerIds, searchTerm, bookings, cleaners]);
 
   const requestLocation = () => {
     setLocationStatus('loading');

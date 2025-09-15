@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import type { User, Booking, ClientProfile, CleanerProfile } from './types';
-import { CLEANERS_DATA, BOOKINGS_DATA } from './constants';
+import type { User, Booking, ClientProfile, CleanerProfile, Cleaner } from './types';
 import HomePage from './components/HomePage';
+import LoginPage from './components/LoginPage';
+import RegisterPage from './components/RegisterPage';
 
 // Statically import all page components to resolve module loading errors.
 import CleanerProfilePage from './components/CleanerProfilePage';
@@ -32,33 +33,48 @@ const mockClientUser: User = {
   profile: mockClientProfile,
 };
 
-// New mockCleanerUser
-const mockCleaner = CLEANERS_DATA.find(c => c.id === 1)!; // Maria Rodriguez, ID 1
-const mockCleanerProfile: CleanerProfile = {
-    hourlyRate: mockCleaner.hourlyRate,
-    bio: mockCleaner.bio,
-    services: mockCleaner.services,
-    serviceArea: 'Milwaukee, WI',
-};
-const mockCleanerUser: User = {
-    id: mockCleaner.id,
-    name: mockCleaner.name,
-    email: 'maria.rodriguez@example.com',
-    picture: mockCleaner.imageUrl,
-    role: 'cleaner',
-    profile: mockCleanerProfile,
-};
-
-
 const App: React.FC = () => {
-  const user = mockClientUser; // Use client user for booking context
-  
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  const [user, setUser] = useState<User | null>(null);
+  const [page, setPage] = useState(isAuthenticated ? 'home' : 'login');
+
   const [pageState, setPageState] = useState<{ page: string; props?: any }>({ page: 'home' });
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
-  const [bookings, setBookings] = useState<Booking[]>(BOOKINGS_DATA);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [cleaners, setCleaners] = useState<Cleaner[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // In a real app, you would fetch the user profile here
+      setUser(mockClientUser);
+      setIsAuthenticated(true);
+      setPage('home');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const fetchCleaners = async () => {
+        const response = await fetch('http://localhost:3001/api/cleaners');
+        const data = await response.json();
+        setCleaners(data);
+      };
+
+      const fetchBookings = async () => {
+        const response = await fetch('http://localhost:3001/api/bookings', {
+          headers: { Authorization: localStorage.getItem('token') || '' },
+        });
+        const data = await response.json();
+        setBookings(data);
+      };
+
+      fetchCleaners();
+      fetchBookings();
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -98,19 +114,37 @@ const App: React.FC = () => {
     window.scrollTo(0, 0); // Scroll to top on page change
   };
   
-  const handleBookingCreate = (bookingDetails: Booking) => {
-    setBookings(prev => [...prev, bookingDetails]);
-    console.log("Booking Created:", bookingDetails);
+  const handleBookingCreate = async (bookingDetails: Omit<Booking, 'id'>) => {
+    const response = await fetch('http://localhost:3001/api/bookings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: localStorage.getItem('token') || '',
+      },
+      body: JSON.stringify(bookingDetails),
+    });
+    const newBooking = await response.json();
+    setBookings(prev => [...prev, newBooking]);
+    console.log("Booking Created:", newBooking);
     // Navigate to dashboard after a slight delay to show confirmation
     setTimeout(() => {
         handleNavigate('dashboard');
     }, 1500);
   }
 
-  const handleUpdateBookingStatus = (bookingId: string, status: 'upcoming' | 'active' | 'completed') => {
+  const handleUpdateBookingStatus = async (bookingId: string, status: 'upcoming' | 'active' | 'completed') => {
+    const response = await fetch(`http://localhost:3001/api/bookings/${bookingId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: localStorage.getItem('token') || '',
+        },
+        body: JSON.stringify({ status }),
+    });
+    const updatedBooking = await response.json();
     setBookings(prevBookings => 
       prevBookings.map(b => 
-        b.id === bookingId ? { ...b, status: status } : b
+        b.id === bookingId ? updatedBooking : b
       )
     );
   };
@@ -119,6 +153,15 @@ const App: React.FC = () => {
     setSearchTerm(term);
   };
   
+  if (!isAuthenticated) {
+    if (page === 'login') {
+      return <LoginPage onLoginSuccess={() => { setIsAuthenticated(true); setPage('home'); }} onNavigateToRegister={() => setPage('register')} />;
+    }
+    if (page === 'register') {
+      return <RegisterPage onRegisterSuccess={() => { setIsAuthenticated(true); setPage('home'); }} onNavigateToLogin={() => setPage('login')} />;
+    }
+  }
+
   const renderContent = () => {
     const { page, props } = pageState;
     const currentBooking = props?.booking ? bookings.find(b => b.id === props.booking.id) || props.booking : undefined;
@@ -130,7 +173,8 @@ const App: React.FC = () => {
                 searchTerm={searchTerm}
                 onBookingCreate={handleBookingCreate}
                 bookings={bookings}
-                user={mockClientUser}
+                user={user!}
+                cleaners={cleaners}
             />;
         case 'cleanerProfile':
             if (!props.cleanerId) {
@@ -143,15 +187,15 @@ const App: React.FC = () => {
                 handleNavigate('home');
                 return null;
             }
-            return <BookingPage cleanerId={props.cleanerId} user={mockClientUser} onBookingComplete={handleBookingCreate} onBack={() => handleNavigate('cleanerProfile', { cleanerId: props.cleanerId })} />;
+            return <BookingPage cleanerId={props.cleanerId} user={user} onBookingComplete={handleBookingCreate} onBack={() => handleNavigate('cleanerProfile', { cleanerId: props.cleanerId })} />;
         case 'settings':
-            return <div className="container mx-auto px-4 py-8 md:py-12"><Settings user={user} /></div>;
+            return <div className="container mx-auto px-4 py-8 md:py-12"><Settings user={user!} /></div>;
         case 'jobTracking':
             if (!currentBooking || !user) {
                 handleNavigate('dashboard');
                 return null;
             }
-            return <JobTrackingPage booking={currentBooking} user={mockClientUser} onBack={() => handleNavigate('dashboard')} onUpdateStatus={handleUpdateBookingStatus} />;
+            return <JobTrackingPage booking={currentBooking} user={user} onBack={() => handleNavigate('dashboard')} onUpdateStatus={handleUpdateBookingStatus} />;
         case 'messages':
              if (!user) {
                 handleNavigate('home');
@@ -170,7 +214,8 @@ const App: React.FC = () => {
                 searchTerm={searchTerm}
                 onBookingCreate={handleBookingCreate}
                 bookings={bookings}
-                user={mockClientUser}
+                user={user!}
+                cleaners={cleaners}
              />;
     }
   }
@@ -196,7 +241,7 @@ const App: React.FC = () => {
       <div 
         className={`fixed inset-0 bg-base-100 dark:bg-neutral z-50 transform transition-transform duration-300 ease-in-out ${isDashboardOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <Dashboard user={user} onNavigate={handleNavigate} onClose={() => setIsDashboardOpen(false)} bookings={bookings} />
+        <Dashboard user={user!} onNavigate={handleNavigate} onClose={() => setIsDashboardOpen(false)} bookings={bookings} />
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleGenAI, Type } from '@google/genai';
 import type { TaskList } from '../types';
 
 interface GenerateListModalProps {
@@ -38,48 +37,23 @@ const GenerateListModal: React.FC<GenerateListModalProps> = ({ isOpen, onClose, 
         setError(null);
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
-
-            const responseSchema = {
-                type: Type.OBJECT,
-                properties: {
-                    listName: {
-                        type: Type.STRING,
-                        description: 'A concise and relevant name for the cleaning task list, under 30 characters.'
-                    },
-                    tasks: {
-                        type: Type.ARRAY,
-                        description: 'An array of tasks to be completed for the cleaning request.',
-                        items: {
-                            type: Type.OBJECT,
-                            properties: {
-                                text: {
-                                    type: Type.STRING,
-                                    description: 'The description of a single cleaning task.'
-                                }
-                            },
-                            required: ['text']
-                        }
-                    }
+            const response = await fetch('http://localhost:3001/api/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
                 },
-                required: ['listName', 'tasks']
-            };
-
-            const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: `Generate a detailed, actionable cleaning checklist based on the following user request: "${prompt}". Provide a short name for the list and a set of distinct tasks.`,
-                config: {
-                    systemInstruction: "You are an assistant that creates structured cleaning checklists. Always adhere to the provided JSON schema.",
-                    responseMimeType: "application/json",
-                    responseSchema: responseSchema,
-                },
+                body: JSON.stringify({ prompt }),
             });
 
-            const jsonString = response.text.trim();
-            const generatedData = JSON.parse(jsonString);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'An error occurred.');
+            }
+
+            const generatedData = await response.json();
             
             if (!generatedData.listName || !Array.isArray(generatedData.tasks)) {
-                 throw new Error("Invalid response format from AI.");
+                 throw new Error("Invalid response format from the server.");
             }
 
             const newList: TaskList = {
@@ -95,9 +69,9 @@ const GenerateListModal: React.FC<GenerateListModalProps> = ({ isOpen, onClose, 
             onListGenerated(newList);
             onClose();
 
-        } catch (e) {
+        } catch (e: any) {
             console.error("Error generating task list:", e);
-            setError("Sorry, an error occurred while generating the list. The AI might be busy. Please try again.");
+            setError(e.message || "Sorry, an error occurred while generating the list. Please try again.");
         } finally {
             setIsLoading(false);
         }
