@@ -2,12 +2,31 @@ import React, { useState, useEffect, useRef } from 'react';
 import type { User, Conversation, Message } from '../types';
 import { CONVERSATIONS_DATA, CLEANERS_DATA } from '../constants';
 
+/**
+ * Props for the MessagesPage component.
+ * @interface MessagesPageProps
+ */
 interface MessagesPageProps {
+    /** The currently authenticated user. */
     user: User;
+    /**
+     * Callback function to handle navigation to other parts of the application.
+     * @param {string} page - The target page name.
+     * @param {any} [props] - Optional props to pass to the target page.
+     */
     onNavigate: (page: string, props?: any) => void;
+    /** Optional ID of a conversation to open immediately upon loading the page. */
     initialConversationId?: string;
 }
 
+/**
+ * A full-screen messaging interface component.
+ * It features a responsive two-panel layout with a list of conversations on the side
+ * and a main view for displaying and sending messages within the active conversation.
+ *
+ * @param {MessagesPageProps} props The props for the component.
+ * @returns {React.ReactElement} The rendered MessagesPage component.
+ */
 const MessagesPage: React.FC<MessagesPageProps> = ({ user, onNavigate, initialConversationId }) => {
     const [conversations, setConversations] = useState<Conversation[]>(CONVERSATIONS_DATA);
     const [activeConversationId, setActiveConversationId] = useState<string | null>(null);

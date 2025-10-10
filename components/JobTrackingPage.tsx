@@ -3,21 +3,43 @@ import type { User, ClientProfile, Booking } from '../types';
 import JobTrackingMap from './JobTrackingMap';
 import JobStatusTracker from './JobStatusTracker';
 
+/**
+ * Props for the JobTrackingPage component.
+ * @interface JobTrackingPageProps
+ */
 interface JobTrackingPageProps {
+  /** The booking object containing all details for the job being tracked. */
   booking: Booking;
+  /** The current user object, used to access the client's profile information. */
   user: User;
+  /** Callback function to navigate back to the previous view. */
   onBack: () => void;
+  /** Callback to update the booking status to 'completed'. */
   onUpdateStatus: (bookingId: string, status: 'completed') => void;
 }
 
 const SIMULATION_DURATION = 90000; // 90 seconds for the whole trip
 
+/**
+ * Represents a geographical point with latitude and longitude.
+ * @interface Point
+ */
 interface Point {
+    /** The latitude of the point. */
     lat: number;
+    /** The longitude of the point. */
     lng: number;
 }
 
-// Simulates the fastest route by generating a multi-segment path that resembles a typical city route with turns.
+/**
+ * Simulates a plausible city route between two points by generating a multi-segment path.
+ * This creates a more realistic-looking route with turns for the map display.
+ *
+ * @param {Point} start The starting geographical point.
+ * @param {Point} end The ending geographical point.
+ * @param {number} [numPoints=50] The number of points to generate for the route polyline.
+ * @returns {Point[]} An array of points representing the simulated route.
+ */
 const generateFastestRoute = (start: Point, end: Point, numPoints: number = 50): Point[] => {
     const routePoints: Point[] = [];
     // Create an intermediate waypoint to simulate a right-angle turn, typical for city grids.
@@ -60,7 +82,14 @@ const generateFastestRoute = (start: Point, end: Point, numPoints: number = 50):
     return routePoints;
 };
 
-
+/**
+ * A full-screen page component for clients to track a cleaner's journey to their location.
+ * It uses a simulated animation to show the cleaner's movement on a map and updates
+ * the job status in real-time.
+ *
+ * @param {JobTrackingPageProps} props The props for the component.
+ * @returns {React.ReactElement} The rendered JobTrackingPage component.
+ */
 const JobTrackingPage: React.FC<JobTrackingPageProps> = ({ booking, user, onBack, onUpdateStatus }) => {
     const { cleaner } = booking;
     const clientProfile = user.profile as ClientProfile;

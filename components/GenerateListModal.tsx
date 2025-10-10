@@ -1,12 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import type { TaskList } from '../types';
 
+/**
+ * Props for the GenerateListModal component.
+ * @interface GenerateListModalProps
+ */
 interface GenerateListModalProps {
+    /** Whether the modal is currently open and visible. */
     isOpen: boolean;
+    /** Callback function to close the modal. */
     onClose: () => void;
+    /** Callback function invoked when a new task list is successfully generated. */
     onListGenerated: (list: TaskList) => void;
 }
 
+/**
+ * A modal component that allows users to generate a cleaning task list using an AI service.
+ * It provides a textarea for the user to describe the cleaning job, handles the API call,
+ * and manages loading and error states.
+ *
+ * @param {GenerateListModalProps} props The props for the component.
+ * @returns {React.ReactElement | null} The rendered modal, or null if it is not open.
+ */
 const GenerateListModal: React.FC<GenerateListModalProps> = ({ isOpen, onClose, onListGenerated }) => {
     const [prompt, setPrompt] = useState('');
     const [isLoading, setIsLoading] = useState(false);

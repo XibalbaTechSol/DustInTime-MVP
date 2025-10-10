@@ -1,11 +1,22 @@
 import React from 'react';
 import type { Badge } from '../types';
 
+/**
+ * Props for the BadgeDisplay component.
+ * @interface BadgeDisplayProps
+ */
 interface BadgeDisplayProps {
+    /** The specific badge to display. */
     badge: Badge;
+    /** Optional additional CSS classes to apply to the component. */
     className?: string;
 }
 
+/**
+ * A configuration object that maps badge names to their display properties,
+ * including CSS styles, an SVG icon, and display text.
+ * @const {object} badgeConfig
+ */
 const badgeConfig: { [key in Badge]: { style: string, icon: JSX.Element, text: string } } = {
     'Top Rated': {
         style: 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200 border border-amber-300/50',

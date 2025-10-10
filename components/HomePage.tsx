@@ -8,7 +8,15 @@ import InstantBookModal from './InstantBookModal'; // New
 import { getCleanerBadge, calculateAvailableSlots } from '../utils'; // New
 import type { Cleaner, Booking, User } from '../types'; // New
 
-// Geolocation distance calculation (Haversine formula)
+/**
+ * Calculates the distance between two geographical points using the Haversine formula.
+ *
+ * @param {number} lat1 Latitude of the first point.
+ * @param {number} lon1 Longitude of the first point.
+ * @param {number} lat2 Latitude of the second point.
+ * @param {number} lon2 Longitude of the second point.
+ * @returns {number} The distance in miles.
+ */
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
   const R = 3959; // Radius of the Earth in miles
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -21,15 +29,33 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 };
 
+/**
+ * Props for the HomePage component.
+ * @interface HomePageProps
+ */
 interface HomePageProps {
+    /** Function to handle navigation to other pages. */
     onNavigate: (page: string, props?: any) => void;
+    /** The current search term entered by the user. */
     searchTerm: string;
+    /** Callback function invoked when a new booking is created. */
     onBookingCreate: (booking: Booking) => void;
+    /** An array of existing bookings, used for availability checks. */
     bookings: Booking[];
+    /** The currently authenticated user. */
     user: User;
+    /** The list of all cleaners to be displayed and filtered. */
     cleaners: Cleaner[];
 }
 
+/**
+ * The main page of the application for finding and booking cleaners.
+ * It features a map and list view, advanced filtering, sorting, and handles
+ * user location for proximity-based results.
+ *
+ * @param {HomePageProps} props The props for the component.
+ * @returns {React.ReactElement} The rendered HomePage component.
+ */
 const HomePage: React.FC<HomePageProps> = ({ onNavigate, searchTerm, onBookingCreate, bookings, user, cleaners }) => {
   const [locationStatus, setLocationStatus] = useState<string>('loading');
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);

@@ -1,6 +1,24 @@
 import React, { useState } from 'react';
 
-const RegisterPage = ({ onRegisterSuccess, onNavigateToLogin }: { onRegisterSuccess: () => void; onNavigateToLogin: () => void; }) => {
+/**
+ * Props for the RegisterPage component.
+ * @interface RegisterPageProps
+ */
+interface RegisterPageProps {
+  /** Callback function to be invoked upon successful registration. */
+  onRegisterSuccess: () => void;
+  /** Callback function to navigate to the login page. */
+  onNavigateToLogin: () => void;
+}
+
+/**
+ * A component that renders a registration form for new users.
+ * It handles form submission, API calls to the register endpoint, and displays errors.
+ *
+ * @param {RegisterPageProps} props The props for the component.
+ * @returns {React.ReactElement} The rendered registration page.
+ */
+const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onNavigateToLogin }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

@@ -9,16 +9,36 @@ import MapCleanerCard from './MapCleanerCard';
 // The original declaration was causing a "Duplicate identifier 'MarkerClusterGroup'" error,
 // which indicates that the types are now being correctly inferred from the imported package.
 
+/**
+ * Props for the Map component.
+ * @interface MapProps
+ */
 interface MapProps {
+    /** An array of cleaner objects to be displayed on the map. */
     cleaners: Cleaner[];
+    /** The geographical location of the user, or null if not available. */
     userLocation: { lat: number, lng: number } | null;
+    /** The currently selected cleaner object, or null if none is selected. */
     selectedCleaner: Cleaner | null;
+    /** The ID of the cleaner currently being hovered over. */
     hoveredCleanerId: number | null;
+    /** Callback function invoked when a cleaner's marker is clicked. */
     onMarkerClick: (id: number) => void;
+    /** Callback function invoked when the mouse enters or leaves a marker. */
     onMarkerHover: (id: number | null) => void;
+    /** Function to handle navigation, passed to the popup card. */
     onNavigate: (page: string, props: any) => void;
 }
 
+/**
+ * Creates a custom Leaflet DivIcon for a cleaner marker.
+ * The icon's appearance changes based on whether it is selected or hovered.
+ *
+ * @param {Cleaner} cleaner The cleaner data for the icon.
+ * @param {boolean} isSelected True if the cleaner is currently selected.
+ * @param {boolean} isHovered True if the cleaner is currently hovered.
+ * @returns {L.DivIcon} A Leaflet DivIcon for the cleaner.
+ */
 const createCleanerIcon = (cleaner: Cleaner, isSelected: boolean, isHovered: boolean) => {
     const isActive = isSelected || isHovered;
     const classNames = `
@@ -52,13 +72,25 @@ const createCleanerIcon = (cleaner: Cleaner, isSelected: boolean, isHovered: boo
     });
 };
 
+/**
+ * Custom Leaflet DivIcon for the user's location marker.
+ * @const {L.DivIcon} userIcon
+ */
 const userIcon = L.divIcon({
   html: `<div class="w-5 h-5 bg-blue-500 rounded-full ring-4 ring-white dark:ring-slate-800"></div>`,
   className: 'bg-transparent border-0',
   iconSize: [20, 20],
 });
 
-
+/**
+ * An interactive map component for displaying cleaners using Leaflet.
+ * It features marker clustering for performance, custom icons that respond to
+ * hover and selection states, and custom popups that render React components.
+ * It also includes custom UI controls for zoom and recentering.
+ *
+ * @param {MapProps} props The props for the component.
+ * @returns {React.ReactElement} The rendered Map component with its container and controls.
+ */
 const Map: React.FC<MapProps> = ({ cleaners, userLocation, selectedCleaner, hoveredCleanerId, onMarkerClick, onMarkerHover, onNavigate }) => {
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);

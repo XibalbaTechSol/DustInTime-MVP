@@ -1,12 +1,26 @@
 
 import React, { useEffect } from 'react';
 
+/**
+ * Props for the LocationPromptModal component.
+ * @interface LocationPromptModalProps
+ */
 interface LocationPromptModalProps {
+  /** Whether the modal is currently open and visible. */
   isOpen: boolean;
+  /** Callback function to be invoked when the user allows location access. */
   onAllow: () => void;
+  /** Callback function to be invoked when the user denies location access. */
   onDeny: () => void;
 }
 
+/**
+ * A modal component that prompts the user to grant location permissions.
+ * This is used to enable features like sorting cleaners by proximity.
+ *
+ * @param {LocationPromptModalProps} props The props for the component.
+ * @returns {React.ReactElement | null} The rendered modal, or null if it is not open.
+ */
 const LocationPromptModal: React.FC<LocationPromptModalProps> = ({ isOpen, onAllow, onDeny }) => {
   useEffect(() => {
     if (isOpen) {

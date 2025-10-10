@@ -2,13 +2,33 @@ import React, { useState, useEffect } from 'react';
 import TaskLists from './TaskLists';
 import type { Booking, User } from '../types';
 
+/**
+ * Props for the Dashboard component.
+ * @interface DashboardProps
+ */
 interface DashboardProps {
+    /** The currently logged-in user, or null if no user is logged in. */
     user: User | null;
+    /**
+     * Callback function to handle navigation to other pages.
+     * @param {string} page - The target page name.
+     * @param {any} [props] - Optional props to pass to the target page.
+     */
     onNavigate: (page: string, props?: any) => void;
+    /** Callback function to close the dashboard view. */
     onClose: () => void;
+    /** An array of all relevant bookings to be displayed. */
     bookings: Booking[];
 }
 
+/**
+ * A dashboard component that displays relevant information based on the user's role.
+ * It serves as a central hub for both clients to manage their bookings and cleaners
+ * to view their job schedule.
+ *
+ * @param {DashboardProps} props The props for the component.
+ * @returns {React.ReactElement} The rendered Dashboard component.
+ */
 const Dashboard: React.FC<DashboardProps> = ({ user, onNavigate, onClose, bookings }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -162,6 +182,16 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onNavigate, onClose, bookin
   );
 };
 
+/**
+ * A card component for displaying a client's booking details.
+ * It shows different actions based on whether the booking is in the past or upcoming.
+ *
+ * @param {object} props The props for the component.
+ * @param {Booking} props.booking The booking data to display.
+ * @param {(page: string, props: any) => void} props.onNavigate The navigation function.
+ * @param {boolean} [props.isPast=false] Flag to indicate if the booking is in the past.
+ * @returns {React.ReactElement} The rendered BookingCard component.
+ */
 const BookingCard: React.FC<{ booking: Booking, onNavigate: (page: string, props: any) => void, isPast?: boolean }> = ({ booking, onNavigate, isPast = false }) => {
     const { cleaner, date, service, costDetails, specializedTasks } = booking;
     const bookingDate = new Date(date);
@@ -197,6 +227,16 @@ const BookingCard: React.FC<{ booking: Booking, onNavigate: (page: string, props
 };
 
 
+/**
+ * A card component for displaying a cleaner's job details.
+ * It provides key information about the client, location, and time of the job,
+ * with a primary action to navigate to the job.
+ *
+ * @param {object} props The props for the component.
+ * @param {Booking} props.booking The booking data to display.
+ * @param {(page: string, props: any) => void} props.onNavigate The navigation function.
+ * @returns {React.ReactElement} The rendered CleanerBookingCard component.
+ */
 const CleanerBookingCard: React.FC<{ booking: Booking, onNavigate: (page: string, props: any) => void }> = ({ booking, onNavigate }) => {
     const jobDate = new Date(booking.date);
     const isToday = jobDate.toDateString() === new Date().toDateString();
