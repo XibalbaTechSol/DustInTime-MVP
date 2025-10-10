@@ -2,19 +2,37 @@ import React, { useMemo, useState } from 'react';
 import type { Booking } from '../types';
 import CleanerNavigationMap from './CleanerNavigationMap';
 
+/**
+ * Props for the CleanerNavigationPage component.
+ */
 interface CleanerNavigationPageProps {
+  /** The booking object for the current job. */
   booking: Booking;
+  /** Callback function to navigate back. */
   onBack: () => void;
-  // FIX: Broaden the status type to allow setting the job to 'active' or 'completed'.
+  /**
+   * Callback function to update the booking status.
+   * @param bookingId The ID of the booking to update.
+   * @param status The new status of the booking.
+   */
   onUpdateStatus: (bookingId: string, status: 'upcoming' | 'active' | 'completed') => void;
 }
 
+/**
+ * Represents a geographical point with latitude and longitude.
+ */
 interface Point {
     lat: number;
     lng: number;
 }
 
-// Re-using the route generation logic from JobTrackingPage
+/**
+ * Generates a simulated fastest route between two points.
+ * @param start The starting point.
+ * @param end The ending point.
+ * @param numPoints The number of points to generate for the route.
+ * @returns An array of points representing the route.
+ */
 const generateFastestRoute = (start: Point, end: Point, numPoints: number = 50): Point[] => {
     const routePoints: Point[] = [];
     const waypoint = { lat: start.lat, lng: end.lng }; // Simulate a right-angle turn
@@ -41,6 +59,11 @@ const generateFastestRoute = (start: Point, end: Point, numPoints: number = 50):
     return routePoints;
 };
 
+/**
+ * A page for cleaners to navigate to a job and manage its status.
+ * @param {CleanerNavigationPageProps} props The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const CleanerNavigationPage: React.FC<CleanerNavigationPageProps> = ({ booking, onBack, onUpdateStatus }) => {
     const { cleaner, clientLocation, clientAddress, clientName } = booking;
     

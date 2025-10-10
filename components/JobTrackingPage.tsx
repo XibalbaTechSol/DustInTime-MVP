@@ -3,21 +3,41 @@ import type { User, ClientProfile, Booking } from '../types';
 import JobTrackingMap from './JobTrackingMap';
 import JobStatusTracker from './JobStatusTracker';
 
+/**
+ * Props for the JobTrackingPage component.
+ */
 interface JobTrackingPageProps {
+  /** The booking object for the job being tracked. */
   booking: Booking;
+  /** The current user object. */
   user: User;
+  /** Callback function to navigate back. */
   onBack: () => void;
+  /**
+   * Callback function to update the booking status.
+   * @param bookingId The ID of the booking to update.
+   * @param status The new status of the booking.
+   */
   onUpdateStatus: (bookingId: string, status: 'completed') => void;
 }
 
 const SIMULATION_DURATION = 90000; // 90 seconds for the whole trip
 
+/**
+ * Represents a geographical point with latitude and longitude.
+ */
 interface Point {
     lat: number;
     lng: number;
 }
 
-// Simulates the fastest route by generating a multi-segment path that resembles a typical city route with turns.
+/**
+ * Simulates the fastest route by generating a multi-segment path that resembles a typical city route with turns.
+ * @param start The starting point.
+ * @param end The ending point.
+ * @param numPoints The number of points to generate for the route.
+ * @returns An array of points representing the route.
+ */
 const generateFastestRoute = (start: Point, end: Point, numPoints: number = 50): Point[] => {
     const routePoints: Point[] = [];
     // Create an intermediate waypoint to simulate a right-angle turn, typical for city grids.
@@ -61,6 +81,11 @@ const generateFastestRoute = (start: Point, end: Point, numPoints: number = 50):
 };
 
 
+/**
+ * A page for clients to track the status and location of their cleaner for an active job.
+ * @param {JobTrackingPageProps} props The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const JobTrackingPage: React.FC<JobTrackingPageProps> = ({ booking, user, onBack, onUpdateStatus }) => {
     const { cleaner } = booking;
     const clientProfile = user.profile as ClientProfile;

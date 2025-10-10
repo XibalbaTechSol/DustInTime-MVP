@@ -1,10 +1,20 @@
 import React from 'react';
 
+/**
+ * Props for the ThemeToggle component.
+ */
 interface ThemeToggleProps {
+  /** The current theme ('light' or 'dark'). */
   theme: string;
+  /** Callback function to toggle the theme. */
   onToggle: () => void;
 }
 
+/**
+ * A button component for toggling between light and dark themes.
+ * @param {ThemeToggleProps} props The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const ThemeToggle: React.FC<ThemeToggleProps> = ({ theme, onToggle }) => {
   return (
     <button

@@ -1,6 +1,10 @@
 
 import React from 'react';
 
+/**
+ * The footer component for the application.
+ * @returns {JSX.Element} The rendered component.
+ */
 const Footer: React.FC = () => {
   return (
     <footer className="bg-neutral-focus text-base-200 mt-auto">

@@ -1,3 +1,6 @@
+/**
+ * Represents a review provided by a client for a cleaner.
+ */
 export interface Review {
   id: number;
   authorName: string;
@@ -7,14 +10,23 @@ export interface Review {
   date: string;
 }
 
+/**
+ * Represents a specialized task that a cleaner can perform at an additional cost.
+ */
 export interface SpecializedTask {
   name: string;
   rate: number;
   unit: 'per hour';
 }
 
+/**
+ * Represents the possible badges a cleaner can have.
+ */
 export type Badge = 'Top Rated' | 'Great Value' | 'Rising Star' | 'New to Platform';
 
+/**
+ * Represents a cleaner available on the platform.
+ */
 export interface Cleaner {
   id: number;
   name: string;
@@ -43,7 +55,9 @@ export interface Cleaner {
   badge?: Badge | null;
 }
 
-// Client-specific profile data
+/**
+ * Represents the profile of a client user.
+ */
 export interface ClientProfile {
   address: string;
   propertyType: 'Apartment' | 'House' | 'Townhouse' | 'Other';
@@ -55,7 +69,9 @@ export interface ClientProfile {
   };
 }
 
-// Cleaner-specific profile data
+/**
+ * Represents the profile of a cleaner user.
+ */
 export interface CleanerProfile {
   hourlyRate: number;
   bio: string;
@@ -63,7 +79,9 @@ export interface CleanerProfile {
   serviceArea: string; // e.g., zip code
 }
 
-// Updated User interface
+/**
+ * Represents a user of the application, who can be a client or a cleaner.
+ */
 export interface User {
   id: number | string;
   name: string;
@@ -73,6 +91,9 @@ export interface User {
   profile?: ClientProfile | CleanerProfile;
 }
 
+/**
+ * Represents a single task in a task list.
+ */
 export interface Task {
   id: string;
   text: string;
@@ -81,12 +102,18 @@ export interface Task {
   reminderSent?: boolean;
 }
 
+/**
+ * Represents a list of tasks.
+ */
 export interface TaskList {
   id:string;
   name: string;
   tasks: Task[];
 }
 
+/**
+ * Represents the detailed breakdown of the cost of a booking.
+ */
 export interface CostDetails {
   subtotal: number;
   specializedTasksTotal: number;
@@ -94,6 +121,9 @@ export interface CostDetails {
   total: number;
 }
 
+/**
+ * Represents a booking of a cleaner by a client.
+ */
 export interface Booking {
   id: string;
   cleaner: Cleaner;
@@ -113,6 +143,9 @@ export interface Booking {
 
 // --- Messaging Types ---
 
+/**
+ * Represents a single message in a conversation.
+ */
 export interface Message {
   id: string;
   senderId: 'client' | number; // 'client' for the user, cleaner's ID for the cleaner
@@ -120,6 +153,9 @@ export interface Message {
   timestamp: string;
 }
 
+/**
+ * Represents a conversation between a client and a cleaner.
+ */
 export interface Conversation {
   id: string; // e.g., 'client-1' for conversation between client and cleaner 1
   cleaner: Cleaner;

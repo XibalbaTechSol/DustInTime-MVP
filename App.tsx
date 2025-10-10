@@ -15,7 +15,9 @@ import JobTrackingPage from './components/JobTrackingPage';
 import MessagesPage from './components/MessagesPage';
 import CleanerNavigationPage from './components/CleanerNavigationPage';
 
-// Create a mock user since authentication has been removed.
+/**
+ * Mock client profile data.
+ */
 const mockClientProfile: ClientProfile = {
   address: '123 Main St, Milwaukee, WI',
   propertyType: 'Apartment',
@@ -24,6 +26,9 @@ const mockClientProfile: ClientProfile = {
   location: { lat: 43.05, lng: -87.95 },
 };
 
+/**
+ * Mock client user data.
+ */
 const mockClientUser: User = {
   id: 'client-alex-doe',
   name: 'Alex Doe',
@@ -33,6 +38,10 @@ const mockClientUser: User = {
   profile: mockClientProfile,
 };
 
+/**
+ * The main application component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
   const [user, setUser] = useState<User | null>(null);

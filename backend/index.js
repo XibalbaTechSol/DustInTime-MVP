@@ -19,6 +19,12 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // --- AUTHENTICATION ---
 
+/**
+ * Middleware to verify JWT token.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @param {function} next - The next middleware function.
+ */
 const verifyToken = (req, res, next) => {
   const token = req.headers['authorization'];
   if (!token) {
@@ -34,6 +40,11 @@ const verifyToken = (req, res, next) => {
   });
 };
 
+/**
+ * Registers a new user.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ */
 app.post('/api/auth/register', async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -66,6 +77,11 @@ app.post('/api/auth/register', async (req, res) => {
   res.status(201).send({ auth: true, token });
 });
 
+/**
+ * Logs in a user.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ */
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -91,6 +107,11 @@ app.post('/api/auth/login', async (req, res) => {
   res.status(200).send({ auth: true, token });
 });
 
+/**
+ * A protected route that requires a valid token.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ */
 app.get('/api/protected', verifyToken, (req, res) => {
     res.status(200).send({ message: 'This is a protected route.' });
 });
@@ -98,12 +119,21 @@ app.get('/api/protected', verifyToken, (req, res) => {
 
 // --- API ROUTES ---
 
-// Cleaners
+/**
+ * Gets all cleaners.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ */
 app.get('/api/cleaners', async (req, res) => {
   await db.read();
   res.json(db.data.cleaners);
 });
 
+/**
+ * Gets a single cleaner by ID.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ */
 app.get('/api/cleaners/:id', async (req, res) => {
     await db.read();
     const cleaner = db.data.cleaners.find(c => c.id === parseInt(req.params.id));
@@ -114,13 +144,22 @@ app.get('/api/cleaners/:id', async (req, res) => {
     }
 });
 
-// Bookings
+/**
+ * Gets all bookings.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ */
 app.get('/api/bookings', verifyToken, async (req, res) => {
     await db.read();
     // In a real app, you'd filter bookings by req.userId
     res.json(db.data.bookings);
 });
 
+/**
+ * Creates a new booking.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ */
 app.post('/api/bookings', verifyToken, async (req, res) => {
     const newBooking = {
         id: Date.now().toString(),
@@ -131,6 +170,11 @@ app.post('/api/bookings', verifyToken, async (req, res) => {
     res.status(201).json(newBooking);
 });
 
+/**
+ * Updates a booking by ID.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ */
 app.put('/api/bookings/:id', verifyToken, async (req, res) => {
     await db.read();
     const bookingIndex = db.data.bookings.findIndex(b => b.id === req.params.id);
@@ -143,11 +187,20 @@ app.put('/api/bookings/:id', verifyToken, async (req, res) => {
     }
 });
 
-
+/**
+ * The root route.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ */
 app.get('/', (req, res) => {
   res.send('Hello from the backend!');
 });
 
+/**
+ * Generates a task list using the Google GenAI API.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ */
 app.post('/api/generate', async (req, res) => {
   const { prompt } = req.body;
 

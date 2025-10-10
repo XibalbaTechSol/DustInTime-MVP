@@ -3,6 +3,8 @@ import type { Cleaner, Badge, Booking } from './types';
 /**
  * Determines the most appropriate badge for a cleaner based on their stats.
  * The order of checks determines the priority of the badge.
+ * @param cleaner The cleaner object to evaluate.
+ * @returns A badge string or null if no badge is applicable.
  */
 export const getCleanerBadge = (cleaner: Cleaner): Badge | null => {
   const { rating, reviewsCount, hourlyRate } = cleaner;
