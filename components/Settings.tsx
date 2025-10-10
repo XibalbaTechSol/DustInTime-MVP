@@ -1,13 +1,22 @@
-
 import React, { useState, useEffect } from 'react';
 import type { User, ClientProfile, CleanerProfile } from '../types';
 
 const ALL_SERVICES = ['Deep Cleaning', 'Residential', 'Move-in/out', 'Eco-Friendly', 'Office', 'Windows', 'Laundry'];
 
+/**
+ * Props for the Settings component.
+ */
 interface SettingsProps {
+    /** The current user object, or null if not logged in. */
     user: User | null;
 }
 
+/**
+ * A settings page for users to view and edit their profile information.
+ * The form is disabled as the backend logic for saving is not implemented.
+ * @param {SettingsProps} props The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const Settings: React.FC<SettingsProps> = ({ user }) => {
     const [formData, setFormData] = useState<any>({});
     

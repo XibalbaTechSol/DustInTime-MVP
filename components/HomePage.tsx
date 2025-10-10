@@ -8,7 +8,14 @@ import InstantBookModal from './InstantBookModal'; // New
 import { getCleanerBadge, calculateAvailableSlots } from '../utils'; // New
 import type { Cleaner, Booking, User } from '../types'; // New
 
-// Geolocation distance calculation (Haversine formula)
+/**
+ * Calculates the distance between two geographical points using the Haversine formula.
+ * @param lat1 The latitude of the first point.
+ * @param lon1 The longitude of the first point.
+ * @param lat2 The latitude of the second point.
+ * @param lon2 The longitude of the second point.
+ * @returns The distance between the two points in miles.
+ */
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
   const R = 3959; // Radius of the Earth in miles
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -21,15 +28,36 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 };
 
+/**
+ * Props for the HomePage component.
+ */
 interface HomePageProps {
+    /**
+     * Callback function to handle navigation to other pages.
+     * @param page The page to navigate to.
+     * @param props Optional props to pass to the new page.
+     */
     onNavigate: (page: string, props?: any) => void;
+    /** The current search term. */
     searchTerm: string;
+    /**
+     * Callback function to handle the creation of a new booking.
+     * @param booking The new booking object.
+     */
     onBookingCreate: (booking: Booking) => void;
+    /** An array of all bookings. */
     bookings: Booking[];
+    /** The current user object. */
     user: User;
+    /** An array of all cleaners. */
     cleaners: Cleaner[];
 }
 
+/**
+ * The main home page of the application, which displays a map and list of cleaners.
+ * @param {HomePageProps} props The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const HomePage: React.FC<HomePageProps> = ({ onNavigate, searchTerm, onBookingCreate, bookings, user, cleaners }) => {
   const [locationStatus, setLocationStatus] = useState<string>('loading');
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);

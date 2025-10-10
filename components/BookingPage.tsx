@@ -3,15 +3,29 @@ import type { Cleaner, User, Booking, SpecializedTask } from '../types';
 import StarRating from './StarRating';
 import { CLEANERS_DATA } from '../constants';
 
+/**
+ * Props for the BookingPage component.
+ */
 interface BookingPageProps {
+    /** The ID of the cleaner being booked. */
     cleanerId: number;
+    /** The current user object. */
     user: User;
+    /** Callback function to execute when the booking is successfully created. */
     onBookingComplete: (bookingDetails: Booking) => void;
+    /** Callback function to navigate back to the previous page. */
     onBack: () => void;
 }
 
+/** The percentage of the booking total charged as a platform fee. */
 const PLATFORM_FEE_PERCENTAGE = 0.05;
 
+/**
+ * A multi-step page for booking a cleaning service with a specific cleaner.
+ * It handles scheduling, task selection, cost calculation, and confirmation.
+ * @param {BookingPageProps} props The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const BookingPage: React.FC<BookingPageProps> = ({ cleanerId, user, onBookingComplete, onBack }) => {
     const cleaner = CLEANERS_DATA.find(c => c.id === cleanerId);
 

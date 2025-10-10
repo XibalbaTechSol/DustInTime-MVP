@@ -2,17 +2,31 @@ import React, { useState, useEffect, useMemo } from 'react';
 import type { Cleaner, User, Booking } from '../types';
 import { calculateAvailableSlots } from '../utils';
 
+/**
+ * Props for the InstantBookModal component.
+ */
 interface InstantBookModalProps {
+    /** Whether the modal is open. */
     isOpen: boolean;
+    /** Callback function to close the modal. */
     onClose: () => void;
+    /** The cleaner being booked. */
     cleaner: Cleaner;
+    /** The current user object. */
     user: User;
+    /** An array of all existing bookings to check for conflicts. */
     existingBookings: Booking[];
+    /** Callback function to handle the completed booking. */
     onBookingComplete: (booking: Booking) => void;
 }
 
 const PLATFORM_FEE_PERCENTAGE = 0.05;
 
+/**
+ * A modal for quickly booking a cleaner for a standard 3-hour session.
+ * @param {InstantBookModalProps} props The props for the component.
+ * @returns {JSX.Element | null} The rendered component or null if not open.
+ */
 const InstantBookModal: React.FC<InstantBookModalProps> = ({
     isOpen,
     onClose,

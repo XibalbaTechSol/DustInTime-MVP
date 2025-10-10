@@ -1,11 +1,21 @@
-
 import React from 'react';
 
+/**
+ * Props for the StarRating component.
+ */
 interface StarRatingProps {
+  /** The rating value. */
   rating: number;
+  /** The maximum rating value. */
   maxRating?: number;
 }
 
+/**
+ * A single star icon component.
+ * @param {object} props The props for the component.
+ * @param {boolean} props.filled Whether the star should be filled.
+ * @returns {JSX.Element} The rendered component.
+ */
 const StarIcon: React.FC<{ filled: boolean }> = ({ filled }) => (
   <svg
     className={`w-5 h-5 ${filled ? 'text-yellow-400' : 'text-gray-300'}`}
@@ -17,6 +27,11 @@ const StarIcon: React.FC<{ filled: boolean }> = ({ filled }) => (
   </svg>
 );
 
+/**
+ * A component that displays a star rating.
+ * @param {StarRatingProps} props The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const StarRating: React.FC<StarRatingProps> = ({ rating, maxRating = 5 }) => {
   const fullStars = Math.floor(rating);
   const halfStar = rating % 1 !== 0; // Not used, but could be implemented

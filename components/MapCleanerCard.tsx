@@ -2,11 +2,25 @@ import React from 'react';
 import type { Cleaner } from '../types';
 import StarRating from './StarRating';
 
+/**
+ * Props for the MapCleanerCard component.
+ */
 interface MapCleanerCardProps {
+  /** The cleaner object to display in the card. */
   cleaner: Cleaner;
+  /**
+   * Callback function for navigation.
+   * @param page The page to navigate to.
+   * @param props Optional props for the new page.
+   */
   onNavigate: (page: string, props: any) => void;
 }
 
+/**
+ * A small card component displayed as a popup on the map when a cleaner is selected.
+ * @param {MapCleanerCardProps} props The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const MapCleanerCard: React.FC<MapCleanerCardProps> = ({ cleaner, onNavigate }) => {
   const handleViewProfile = () => {
     onNavigate('cleanerProfile', { cleanerId: cleaner.id, from: 'map' });

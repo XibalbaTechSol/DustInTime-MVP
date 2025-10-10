@@ -2,12 +2,27 @@ import React, { useState, useEffect, useRef } from 'react';
 import type { User, Conversation, Message } from '../types';
 import { CONVERSATIONS_DATA, CLEANERS_DATA } from '../constants';
 
+/**
+ * Props for the MessagesPage component.
+ */
 interface MessagesPageProps {
+    /** The current user object. */
     user: User;
+    /**
+     * Callback function for navigation.
+     * @param page The page to navigate to.
+     * @param props Optional props for the new page.
+     */
     onNavigate: (page: string, props?: any) => void;
+    /** The ID of the conversation to open initially. */
     initialConversationId?: string;
 }
 
+/**
+ * A full-screen messaging page with a conversation list and a chat view.
+ * @param {MessagesPageProps} props The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const MessagesPage: React.FC<MessagesPageProps> = ({ user, onNavigate, initialConversationId }) => {
     const [conversations, setConversations] = useState<Conversation[]>(CONVERSATIONS_DATA);
     const [activeConversationId, setActiveConversationId] = useState<string | null>(null);

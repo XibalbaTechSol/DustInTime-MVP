@@ -4,6 +4,11 @@ import GenerateListModal from './GenerateListModal';
 
 const STORAGE_KEY = 'dust_in_time_task_lists';
 
+/**
+ * A component for managing task lists, including creating, deleting, and updating tasks.
+ * It also supports generating task lists with AI and sending notifications for due tasks.
+ * @returns {JSX.Element} The rendered component.
+ */
 const TaskLists: React.FC = () => {
     // State for all task lists
     const [taskLists, setTaskLists] = useState<TaskList[]>([]);

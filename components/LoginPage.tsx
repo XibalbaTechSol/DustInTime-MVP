@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
 
+/**
+ * A login page component.
+ * @param {object} props The props for the component.
+ * @param {() => void} props.onLoginSuccess Callback function to execute on successful login.
+ * @param {() => void} props.onNavigateToRegister Callback function to navigate to the registration page.
+ * @returns {JSX.Element} The rendered component.
+ */
 const LoginPage = ({ onLoginSuccess, onNavigateToRegister }: { onLoginSuccess: () => void; onNavigateToRegister: () => void; }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

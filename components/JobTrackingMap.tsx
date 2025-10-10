@@ -1,21 +1,31 @@
-
-
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 
+/**
+ * Represents a geographical point with latitude and longitude.
+ */
 interface Point {
     lat: number;
     lng: number;
 }
 
+/**
+ * Props for the JobTrackingMap component.
+ */
 interface JobTrackingMapProps {
+    /** An array of points representing the route. */
     route: Point[];
+    /** The current position of the cleaner. */
     cleanerPosition: Point;
+    /** The starting position of the route. */
     startPosition: Point;
+    /** The ending position of the route. */
     endPosition: Point;
 }
 
-// Cleaner Icon with a pulsing animation
+/**
+ * Custom Leaflet icon for the cleaner, with a pulsing animation.
+ */
 const cleanerIcon = L.divIcon({
     html: `
         <div class="relative flex items-center justify-center w-8 h-8">
@@ -32,7 +42,9 @@ const cleanerIcon = L.divIcon({
     iconAnchor: [16, 16],
 });
 
-// User Location Icon (Client's Home)
+/**
+ * Custom Leaflet icon for the user's location (client's home).
+ */
 const userLocationIcon = L.divIcon({
     html: `<div class="w-5 h-5 bg-blue-500 rounded-full ring-4 ring-white dark:ring-slate-800 shadow-md"></div>`,
     className: 'bg-transparent border-0',
@@ -40,7 +52,9 @@ const userLocationIcon = L.divIcon({
     iconAnchor: [10, 10],
 });
 
-// Start (flag) Icon
+/**
+ * Custom Leaflet icon for the starting point of the route.
+ */
 const startIcon = L.divIcon({
     html: `
         <div class="flex items-center justify-center w-8 h-8 bg-slate-500 rounded-full shadow-lg text-white">
@@ -54,6 +68,11 @@ const startIcon = L.divIcon({
     iconAnchor: [16, 16],
 });
 
+/**
+ * A map component for tracking the cleaner's location during a job.
+ * @param {JobTrackingMapProps} props The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const JobTrackingMap: React.FC<JobTrackingMapProps> = ({ route, cleanerPosition, startPosition, endPosition }) => {
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);

@@ -3,17 +3,33 @@ import type { Cleaner } from '../types';
 import StarRating from './StarRating';
 import BadgeDisplay from './BadgeDisplay';
 
+/**
+ * Props for the CleanerCard component.
+ */
 interface CleanerCardProps {
+  /** The cleaner object to display. */
   cleaner: Cleaner;
+  /** Callback function when the "View Profile" button is clicked. */
   onSelect: (cleaner: Cleaner) => void;
+  /** Callback function when the card is clicked. */
   onClick: () => void;
+  /** Whether the card is currently selected. */
   isSelected: boolean;
+  /** Callback function when the mouse enters the card. */
   onMouseEnter: () => void;
+  /** Callback function when the mouse leaves the card. */
   onMouseLeave: () => void;
+  /** Whether the cleaner is favorited. */
   isFavorited: boolean;
+  /** Callback function to toggle the favorite status of the cleaner. */
   onToggleFavorite: (cleanerId: number) => void;
 }
 
+/**
+ * A card component that displays a summary of a cleaner's profile.
+ * @param {CleanerCardProps} props The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const CleanerCard: React.FC<CleanerCardProps> = ({ cleaner, onSelect, onClick, isSelected, onMouseEnter, onMouseLeave, isFavorited, onToggleFavorite }) => {
   return (
     <div

@@ -1,18 +1,29 @@
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 
+/**
+ * Represents a geographical point with latitude and longitude.
+ */
 interface Point {
     lat: number;
     lng: number;
 }
 
+/**
+ * Props for the CleanerNavigationMap component.
+ */
 interface CleanerNavigationMapProps {
+    /** An array of points representing the route. */
     route: Point[];
+    /** The starting position of the route. */
     startPosition: Point;
+    /** The ending position of the route. */
     endPosition: Point;
 }
 
-// Start (cleaner) Icon
+/**
+ * Custom Leaflet icon for the cleaner's starting position.
+ */
 const cleanerIcon = L.divIcon({
     html: `
         <div class="relative flex items-center justify-center w-8 h-8">
@@ -28,7 +39,9 @@ const cleanerIcon = L.divIcon({
     iconAnchor: [16, 32], // Point at bottom center
 });
 
-// Destination (client home) Icon
+/**
+ * Custom Leaflet icon for the destination (client's home).
+ */
 const destinationIcon = L.divIcon({
     html: `
         <div class="relative flex items-center justify-center w-8 h-8">
@@ -44,7 +57,11 @@ const destinationIcon = L.divIcon({
     iconAnchor: [16, 32], // Point at bottom center
 });
 
-
+/**
+ * A map component that displays a navigation route for a cleaner.
+ * @param {CleanerNavigationMapProps} props The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const CleanerNavigationMap: React.FC<CleanerNavigationMapProps> = ({ route, startPosition, endPosition }) => {
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);

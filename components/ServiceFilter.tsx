@@ -1,11 +1,25 @@
 import React from 'react';
 
+/**
+ * Props for the ServiceFilter component.
+ */
 interface ServiceFilterProps {
+  /** An array of available services. */
   services: string[];
+  /** The currently active service filter, or null for no filter. */
   activeFilter: string | null;
+  /**
+   * Callback function when a filter is changed.
+   * @param service The selected service, or null to clear the filter.
+   */
   onFilterChange: (service: string | null) => void;
 }
 
+/**
+ * A horizontal filter bar for selecting services.
+ * @param {ServiceFilterProps} props The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const ServiceFilter: React.FC<ServiceFilterProps> = ({ services, activeFilter, onFilterChange }) => {
   return (
     <div className="w-full overflow-x-auto py-1 hide-scrollbar">

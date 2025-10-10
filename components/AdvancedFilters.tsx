@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
+/**
+ * Represents the filters that can be applied to the cleaner search.
+ */
 interface Filters {
     services: string[];
     priceRange: [number, number];
@@ -8,6 +11,9 @@ interface Filters {
     availabilityDate: string | null;
 }
 
+/**
+ * Props for the AdvancedFilters component.
+ */
 interface AdvancedFiltersProps {
     isOpen: boolean;
     onClose: () => void;
@@ -23,6 +29,11 @@ const RATING_OPTIONS = [
     { label: '3.0 ★ & up', value: 3.0 },
 ];
 
+/**
+ * A sidebar component that allows users to apply advanced filters to the cleaner search.
+ * @param {AdvancedFiltersProps} props The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ isOpen, onClose, currentFilters, onApplyFilters, allServices, resultsCount }) => {
     const [localFilters, setLocalFilters] = useState<Filters>(currentFilters);
     const today = useMemo(() => new Date().toISOString().split('T')[0], []);

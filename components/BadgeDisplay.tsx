@@ -1,11 +1,17 @@
 import React from 'react';
 import type { Badge } from '../types';
 
+/**
+ * Props for the BadgeDisplay component.
+ */
 interface BadgeDisplayProps {
     badge: Badge;
     className?: string;
 }
 
+/**
+ * Configuration for the different badge types.
+ */
 const badgeConfig: { [key in Badge]: { style: string, icon: JSX.Element, text: string } } = {
     'Top Rated': {
         style: 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200 border border-amber-300/50',
@@ -29,6 +35,11 @@ const badgeConfig: { [key in Badge]: { style: string, icon: JSX.Element, text: s
     },
 };
 
+/**
+ * A component that displays a badge with an icon and text.
+ * @param {BadgeDisplayProps} props The props for the component.
+ * @returns {JSX.Element | null} The rendered component or null if no badge is provided.
+ */
 const BadgeDisplay: React.FC<BadgeDisplayProps> = ({ badge, className = '' }) => {
     if (!badge) return null;
 

@@ -1,13 +1,25 @@
 import React from 'react';
 import type { Cleaner } from '../types';
 
+/**
+ * Props for the JobStatusTracker component.
+ */
 interface JobStatusTrackerProps {
+    /** The cleaner object for the job. */
     cleaner: Cleaner;
+    /** An array of status strings for the job. */
     statuses: string[];
+    /** The index of the current status in the statuses array. */
     currentStatusIndex: number;
+    /** The estimated time of arrival in minutes. */
     eta: number;
 }
 
+/**
+ * A component that displays the status of a job in a timeline format.
+ * @param {JobStatusTrackerProps} props The props for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const JobStatusTracker: React.FC<JobStatusTrackerProps> = ({ cleaner, statuses, currentStatusIndex, eta }) => {
     return (
         <div className="bg-base-100 rounded-2xl shadow-2xl p-6 w-full max-w-md mx-auto animate-fade-in-up" style={{ animationDelay: '0.2s', opacity: 0 }}>
