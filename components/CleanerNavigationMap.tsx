@@ -1,18 +1,34 @@
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 
+/**
+ * Represents a geographical point with latitude and longitude.
+ * @interface Point
+ */
 interface Point {
+    /** The latitude of the point. */
     lat: number;
+    /** The longitude of the point. */
     lng: number;
 }
 
+/**
+ * Props for the CleanerNavigationMap component.
+ * @interface CleanerNavigationMapProps
+ */
 interface CleanerNavigationMapProps {
+    /** An array of points representing the route to be drawn on the map. */
     route: Point[];
+    /** The starting point of the route (cleaner's location). */
     startPosition: Point;
+    /** The ending point of the route (client's location). */
     endPosition: Point;
 }
 
-// Start (cleaner) Icon
+/**
+ * Custom Leaflet icon for the cleaner's starting position.
+ * @const {L.DivIcon} cleanerIcon
+ */
 const cleanerIcon = L.divIcon({
     html: `
         <div class="relative flex items-center justify-center w-8 h-8">
@@ -28,7 +44,10 @@ const cleanerIcon = L.divIcon({
     iconAnchor: [16, 32], // Point at bottom center
 });
 
-// Destination (client home) Icon
+/**
+ * Custom Leaflet icon for the client's destination.
+ * @const {L.DivIcon} destinationIcon
+ */
 const destinationIcon = L.divIcon({
     html: `
         <div class="relative flex items-center justify-center w-8 h-8">
@@ -44,7 +63,14 @@ const destinationIcon = L.divIcon({
     iconAnchor: [16, 32], // Point at bottom center
 });
 
-
+/**
+ * A map component that displays a navigation route for a cleaner.
+ * It uses Leaflet to render the map, a polyline for the route, and custom markers
+ * for the start and end points.
+ *
+ * @param {CleanerNavigationMapProps} props The props for the component.
+ * @returns {React.ReactElement} The rendered map container div.
+ */
 const CleanerNavigationMap: React.FC<CleanerNavigationMapProps> = ({ route, startPosition, endPosition }) => {
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);

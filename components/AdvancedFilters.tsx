@@ -1,19 +1,38 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
+/**
+ * Defines the shape of the filters object used throughout the component.
+ * @interface Filters
+ */
 interface Filters {
+    /** An array of selected service names. */
     services: string[];
+    /** A tuple representing the minimum and maximum price range. */
     priceRange: [number, number];
+    /** The minimum star rating selected by the user. */
     minRating: number;
+    /** A boolean indicating whether to show only favorited cleaners. */
     showFavoritesOnly: boolean;
+    /** The selected availability date, or null if not set. */
     availabilityDate: string | null;
 }
 
+/**
+ * Props for the AdvancedFilters component.
+ * @interface AdvancedFiltersProps
+ */
 interface AdvancedFiltersProps {
+    /** Whether the filter panel is currently open. */
     isOpen: boolean;
+    /** Function to call when the panel should be closed. */
     onClose: () => void;
+    /** The currently active filters. */
     currentFilters: Filters;
+    /** Function to call when the user applies new filters. */
     onApplyFilters: (filters: Filters) => void;
+    /** A list of all available services to display as options. */
     allServices: string[];
+    /** The number of results that match the current filters. */
     resultsCount: number;
 }
 
@@ -23,6 +42,14 @@ const RATING_OPTIONS = [
     { label: '3.0 ★ & up', value: 3.0 },
 ];
 
+/**
+ * A slide-out panel component that allows users to apply advanced filters
+ * to a list of cleaners. It includes options for availability, price range,
+ * rating, favorites, and specific services.
+ *
+ * @param {AdvancedFiltersProps} props The props for the component.
+ * @returns {React.ReactElement} The rendered AdvancedFilters component.
+ */
 const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ isOpen, onClose, currentFilters, onApplyFilters, allServices, resultsCount }) => {
     const [localFilters, setLocalFilters] = useState<Filters>(currentFilters);
     const today = useMemo(() => new Date().toISOString().split('T')[0], []);

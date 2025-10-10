@@ -4,10 +4,23 @@ import type { User, ClientProfile, CleanerProfile } from '../types';
 
 const ALL_SERVICES = ['Deep Cleaning', 'Residential', 'Move-in/out', 'Eco-Friendly', 'Office', 'Windows', 'Laundry'];
 
+/**
+ * Props for the Settings component.
+ * @interface SettingsProps
+ */
 interface SettingsProps {
+    /** The currently authenticated user object, or null if not available. */
     user: User | null;
 }
 
+/**
+ * A component that displays a settings form for the user's profile.
+ * It dynamically renders different fields based on the user's role (client or cleaner).
+ * Note: The functionality to save changes is currently disabled in this component.
+ *
+ * @param {SettingsProps} props The props for the component.
+ * @returns {React.ReactElement} The rendered settings page.
+ */
 const Settings: React.FC<SettingsProps> = ({ user }) => {
     const [formData, setFormData] = useState<any>({});
     

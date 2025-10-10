@@ -2,15 +2,36 @@ import React, { useState, useEffect, useRef } from 'react';
 import type { User } from '../types';
 import ThemeToggle from './ThemeToggle';
 
+/**
+ * Props for the Header component.
+ * @interface HeaderProps
+ */
 interface HeaderProps {
+    /** The currently authenticated user object, or null if no user is logged in. */
     user: User | null;
+    /**
+     * Callback function to handle navigation to different pages.
+     * @param {'home' | 'dashboard' | 'settings' | 'messages'} page - The target page.
+     */
     onNavigate: (page: 'home' | 'dashboard' | 'settings' | 'messages') => void;
+    /** Callback function to toggle the visibility of the main dashboard. */
     onToggleDashboard: () => void;
+    /** The current theme name ('light' or 'dark'). */
     theme: string;
+    /** Callback function to toggle the application theme. */
     onToggleTheme: () => void;
+    /** Callback function invoked with the search term as the user types. */
     onSearch: (term: string) => void;
 }
 
+/**
+ * The main header component for the application.
+ * It includes the logo, a search bar, navigation controls, a theme toggle,
+ * and a user profile dropdown menu for authenticated users.
+ *
+ * @param {HeaderProps} props The props for the component.
+ * @returns {React.ReactElement} The rendered Header component.
+ */
 const Header: React.FC<HeaderProps> = ({ user, onNavigate, onToggleDashboard, theme, onToggleTheme, onSearch }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);

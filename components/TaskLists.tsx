@@ -4,6 +4,21 @@ import GenerateListModal from './GenerateListModal';
 
 const STORAGE_KEY = 'dust_in_time_task_lists';
 
+/**
+ * A comprehensive, self-contained task list management component.
+ *
+ * It allows users to:
+ * - Create, view, and delete multiple task lists.
+ * - Add tasks with optional due date/time reminders to the active list.
+ * - Mark tasks as complete or delete them.
+ * - Persist all task lists to the browser's localStorage.
+ * - Request permission for and send desktop notifications for due tasks.
+ * - Open a modal to generate a new task list using an AI service.
+ *
+ * This component does not accept any props.
+ *
+ * @returns {React.ReactElement} The rendered task list management interface.
+ */
 const TaskLists: React.FC = () => {
     // State for all task lists
     const [taskLists, setTaskLists] = useState<TaskList[]>([]);

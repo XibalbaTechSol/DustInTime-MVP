@@ -2,7 +2,10 @@ import type { Cleaner, Badge, Booking } from './types';
 
 /**
  * Determines the most appropriate badge for a cleaner based on their stats.
- * The order of checks determines the priority of the badge.
+ * The order of the checks determines the priority of the badge.
+ *
+ * @param {Cleaner} cleaner The cleaner object to evaluate.
+ * @returns {Badge | null} The most relevant badge for the cleaner, or null if none apply.
  */
 export const getCleanerBadge = (cleaner: Cleaner): Badge | null => {
   const { rating, reviewsCount, hourlyRate } = cleaner;
@@ -25,12 +28,14 @@ export const getCleanerBadge = (cleaner: Cleaner): Badge | null => {
 
 
 /**
- * Calculates available time slots for a cleaner on a specific date.
- * @param date The date to check for availability.
- * @param cleaner The cleaner's profile.
- * @param existingBookings All existing bookings to check for conflicts.
- * @param duration The duration of the desired cleaning session in hours.
- * @returns An array of available start times in "h:mm A" format.
+ * Calculates the available time slots for a cleaner on a specific date by checking
+ * their general availability against their existing bookings.
+ *
+ * @param {Date} date The date to check for availability.
+ * @param {Cleaner} cleaner The cleaner whose schedule is being checked.
+ * @param {Booking[]} existingBookings An array of all existing bookings to check for conflicts.
+ * @param {number} [duration=3] The duration of the desired cleaning session in hours.
+ * @returns {string[]} An array of available start times, formatted as strings (e.g., "10:00 AM").
  */
 export const calculateAvailableSlots = (
     date: Date,

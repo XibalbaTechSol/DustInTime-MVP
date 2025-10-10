@@ -3,14 +3,30 @@ import type { Cleaner } from '../types';
 import StarRating from './StarRating';
 import BadgeDisplay from './BadgeDisplay';
 
+/**
+ * Props for the CleanerListRow component.
+ * @interface CleanerListRowProps
+ */
 interface CleanerListRowProps {
+  /** The cleaner data object to display. */
   cleaner: Cleaner;
+  /** Callback function when the row is clicked, typically for navigation. */
   onSelect: () => void;
+  /** Callback function for the 'Quick Book' button. */
   onQuickBook: () => void;
+  /** Indicates if the cleaner is marked as a favorite. */
   isFavorited: boolean;
+  /** Callback function to toggle the favorite status. */
   onToggleFavorite: () => void;
 }
 
+/**
+ * A component that displays cleaner information in a row format, suitable for lists.
+ * It provides a compact view of the cleaner's details along with 'Quick Book' and 'Favorite' actions.
+ *
+ * @param {CleanerListRowProps} props The props for the component.
+ * @returns {React.ReactElement} The rendered CleanerListRow component.
+ */
 const CleanerListRow: React.FC<CleanerListRowProps> = ({ cleaner, onSelect, onQuickBook, isFavorited, onToggleFavorite }) => {
   return (
     <div

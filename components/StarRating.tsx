@@ -1,11 +1,25 @@
 
 import React from 'react';
 
+/**
+ * Props for the StarRating component.
+ * @interface StarRatingProps
+ */
 interface StarRatingProps {
+  /** The numerical rating value to display. */
   rating: number;
+  /** The maximum possible rating, used to determine the number of empty stars. Defaults to 5. */
   maxRating?: number;
 }
 
+/**
+ * A single star icon component used by the StarRating component.
+ * Its color is determined by the `filled` prop.
+ *
+ * @param {object} props The props for the component.
+ * @param {boolean} props.filled Whether the star should be filled (yellow) or empty (gray).
+ * @returns {React.ReactElement} The rendered SVG star icon.
+ */
 const StarIcon: React.FC<{ filled: boolean }> = ({ filled }) => (
   <svg
     className={`w-5 h-5 ${filled ? 'text-yellow-400' : 'text-gray-300'}`}
@@ -17,6 +31,13 @@ const StarIcon: React.FC<{ filled: boolean }> = ({ filled }) => (
   </svg>
 );
 
+/**
+ * A component that displays a rating as a series of star icons.
+ * It shows a number of filled stars corresponding to the integer part of the rating.
+ *
+ * @param {StarRatingProps} props The props for the component.
+ * @returns {React.ReactElement} A div containing the series of star icons.
+ */
 const StarRating: React.FC<StarRatingProps> = ({ rating, maxRating = 5 }) => {
   const fullStars = Math.floor(rating);
   const halfStar = rating % 1 !== 0; // Not used, but could be implemented

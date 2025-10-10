@@ -1,6 +1,12 @@
 
 import React from 'react';
 
+/**
+ * A simple, stateless footer component for the application.
+ * It displays the copyright year and a company tagline.
+ *
+ * @returns {React.ReactElement} The rendered footer element.
+ */
 const Footer: React.FC = () => {
   return (
     <footer className="bg-neutral-focus text-base-200 mt-auto">

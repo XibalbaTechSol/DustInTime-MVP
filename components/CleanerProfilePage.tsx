@@ -5,14 +5,33 @@ import BadgeDisplay from './BadgeDisplay';
 import { getCleanerBadge } from '../utils';
 import { CLEANERS_DATA } from '../constants';
 
+/**
+ * Props for the CleanerProfilePage component.
+ * @interface CleanerProfilePageProps
+ */
 interface CleanerProfilePageProps {
+    /** The ID of the cleaner whose profile is to be displayed. */
     cleanerId: number;
+    /**
+     * Callback function to handle navigation to other pages.
+     * @param {string} page - The target page name.
+     * @param {any} [props] - Optional props to pass to the target page.
+     */
     onNavigate: (page: string, props?: any) => void;
+    /** An optional string indicating the page from which the user navigated, e.g., 'map'. */
     from?: string;
 }
 
 const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
+/**
+ * A page component that displays the detailed profile of a cleaner.
+ * It includes a header with summary info, action buttons (Book, Message), and a
+ * tabbed interface to show "About", "Reviews", and "Gallery" sections.
+ *
+ * @param {CleanerProfilePageProps} props The props for the component.
+ * @returns {React.ReactElement | null} The rendered profile page, or null if the cleaner is not found.
+ */
 const CleanerProfilePage: React.FC<CleanerProfilePageProps> = ({ cleanerId, onNavigate, from }) => {
     const [activeTab, setActiveTab] = useState('about');
     const [isFavorited, setIsFavorited] = useState(false);

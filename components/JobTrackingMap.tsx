@@ -3,19 +3,36 @@
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 
+/**
+ * Represents a geographical point with latitude and longitude.
+ * @interface Point
+ */
 interface Point {
+    /** The latitude of the point. */
     lat: number;
+    /** The longitude of the point. */
     lng: number;
 }
 
+/**
+ * Props for the JobTrackingMap component.
+ * @interface JobTrackingMapProps
+ */
 interface JobTrackingMapProps {
+    /** An array of points representing the route to be drawn on the map. */
     route: Point[];
+    /** The current real-time position of the cleaner. */
     cleanerPosition: Point;
+    /** The starting point of the route. */
     startPosition: Point;
+    /** The ending point of the route (client's location). */
     endPosition: Point;
 }
 
-// Cleaner Icon with a pulsing animation
+/**
+ * Custom Leaflet icon for the cleaner, featuring a pulsing animation.
+ * @const {L.DivIcon} cleanerIcon
+ */
 const cleanerIcon = L.divIcon({
     html: `
         <div class="relative flex items-center justify-center w-8 h-8">
@@ -32,7 +49,10 @@ const cleanerIcon = L.divIcon({
     iconAnchor: [16, 16],
 });
 
-// User Location Icon (Client's Home)
+/**
+ * Custom Leaflet icon for the user's location (the client's home).
+ * @const {L.DivIcon} userLocationIcon
+ */
 const userLocationIcon = L.divIcon({
     html: `<div class="w-5 h-5 bg-blue-500 rounded-full ring-4 ring-white dark:ring-slate-800 shadow-md"></div>`,
     className: 'bg-transparent border-0',
@@ -40,7 +60,10 @@ const userLocationIcon = L.divIcon({
     iconAnchor: [10, 10],
 });
 
-// Start (flag) Icon
+/**
+ * Custom Leaflet icon representing the starting point of the job with a flag icon.
+ * @const {L.DivIcon} startIcon
+ */
 const startIcon = L.divIcon({
     html: `
         <div class="flex items-center justify-center w-8 h-8 bg-slate-500 rounded-full shadow-lg text-white">
@@ -54,6 +77,14 @@ const startIcon = L.divIcon({
     iconAnchor: [16, 16],
 });
 
+/**
+ * A sophisticated map component for live-tracking a cleaner's progress to a job.
+ * It displays the route, the cleaner's real-time position with an animated marker,
+ * and allows toggling between street and satellite map layers.
+ *
+ * @param {JobTrackingMapProps} props The props for the component.
+ * @returns {React.ReactElement} The rendered map container div.
+ */
 const JobTrackingMap: React.FC<JobTrackingMapProps> = ({ route, cleanerPosition, startPosition, endPosition }) => {
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);

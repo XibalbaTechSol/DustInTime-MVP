@@ -2,19 +2,43 @@ import React, { useMemo, useState } from 'react';
 import type { Booking } from '../types';
 import CleanerNavigationMap from './CleanerNavigationMap';
 
+/**
+ * Props for the CleanerNavigationPage component.
+ * @interface CleanerNavigationPageProps
+ */
 interface CleanerNavigationPageProps {
+  /** The booking object containing all job details. */
   booking: Booking;
+  /** Callback function to navigate back to the previous view. */
   onBack: () => void;
-  // FIX: Broaden the status type to allow setting the job to 'active' or 'completed'.
+  /**
+   * Callback to update the status of the booking.
+   * @param {string} bookingId - The ID of the booking to update.
+   * @param {'upcoming' | 'active' | 'completed'} status - The new status.
+   */
   onUpdateStatus: (bookingId: string, status: 'upcoming' | 'active' | 'completed') => void;
 }
 
+/**
+ * Represents a geographical point with latitude and longitude.
+ * @interface Point
+ */
 interface Point {
+    /** The latitude of the point. */
     lat: number;
+    /** The longitude of the point. */
     lng: number;
 }
 
-// Re-using the route generation logic from JobTrackingPage
+/**
+ * Generates a simulated route between two points for display purposes.
+ * This function creates a simple route with a right-angle turn.
+ *
+ * @param {Point} start The starting geographical point.
+ * @param {Point} end The ending geographical point.
+ * @param {number} [numPoints=50] The number of points to generate for the route polyline.
+ * @returns {Point[]} An array of points representing the simulated route.
+ */
 const generateFastestRoute = (start: Point, end: Point, numPoints: number = 50): Point[] => {
     const routePoints: Point[] = [];
     const waypoint = { lat: start.lat, lng: end.lng }; // Simulate a right-angle turn
@@ -41,6 +65,14 @@ const generateFastestRoute = (start: Point, end: Point, numPoints: number = 50):
     return routePoints;
 };
 
+/**
+ * A full-screen page component for cleaners to navigate to a job and manage its status.
+ * It displays a map with the route, provides controls to start the job, and a modal
+ * to confirm completion.
+ *
+ * @param {CleanerNavigationPageProps} props The props for the component.
+ * @returns {React.ReactElement} The rendered CleanerNavigationPage component.
+ */
 const CleanerNavigationPage: React.FC<CleanerNavigationPageProps> = ({ booking, onBack, onUpdateStatus }) => {
     const { cleaner, clientLocation, clientAddress, clientName } = booking;
     
