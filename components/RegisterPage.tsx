@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { supabase } from '../utils';
 
 /**
  * Props for the RegisterPage component.
@@ -28,23 +29,20 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onNaviga
         e.preventDefault();
         setError('');
 
-        try {
-            const response = await fetch('http://localhost:3001/api/auth/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, password }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                localStorage.setItem('token', data.token);
-                onRegisterSuccess();
-            } else {
-                setError(data.error || 'Registration failed');
+        const { error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    full_name: name,
+                }
             }
-        } catch (err) {
-            setError('An error occurred. Please try again.');
+        });
+
+        if (error) {
+            setError(error.message);
+        } else {
+            onRegisterSuccess();
         }
     };
 

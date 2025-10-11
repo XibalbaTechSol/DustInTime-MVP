@@ -115,7 +115,7 @@ const Header: React.FC<HeaderProps> = ({ user, onNavigate, onToggleDashboard, th
                     <img src={user.picture} alt="User profile" className="h-full w-full object-cover" />
                   </button>
                   {isDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-base-100 dark:bg-neutral rounded-lg shadow-xl py-2 z-40 animate-fade-in animate-scale-in origin-top-right">
+                    <div className="absolute right-0 mt-2 w-56 bg-base-100 dark:bg-neutral rounded-lg shadow-xl py-2 z-50 animate-fade-in animate-scale-in origin-top-right">
                       <div 
                         onClick={() => handleNav('settings')}
                         className="px-4 py-2 border-b dark:border-slate-600 cursor-pointer hover:bg-base-200 dark:hover:bg-neutral-focus"

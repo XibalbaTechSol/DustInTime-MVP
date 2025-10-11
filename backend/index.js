@@ -3,9 +3,6 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const { GoogleGenAI, Type } = require('@google/genai');
 const db = require('./db');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-
 dotenv.config();
 
 const app = express();
@@ -17,84 +14,26 @@ app.use(express.json());
 // Initialize the GoogleGenAI with the API key from environment variables
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-// --- AUTHENTICATION ---
 
-const verifyToken = (req, res, next) => {
-  const token = req.headers['authorization'];
-  if (!token) {
-    return res.status(403).send({ message: 'No token provided.' });
-  }
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.VITE_SUPABASE_ANON_KEY);
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).send({ message: 'Unauthorized.' });
+const verifyToken = async (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ error: 'No token provided' });
     }
-    req.userId = decoded.id;
+
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+
+    if (error) {
+        return res.status(401).json({ error: 'Invalid token' });
+    }
+
+    req.user = user;
     next();
-  });
 };
-
-app.post('/api/auth/register', async (req, res) => {
-  const { name, email, password } = req.body;
-
-  if (!name || !email || !password) {
-    return res.status(400).json({ error: 'Name, email, and password are required' });
-  }
-
-  await db.read();
-  const existingUser = db.data.users.find(user => user.email === email);
-  if (existingUser) {
-    return res.status(400).json({ error: 'User already exists' });
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 8);
-
-  const newUser = {
-    id: Date.now().toString(),
-    name,
-    email,
-    password: hashedPassword,
-  };
-
-  db.data.users.push(newUser);
-  await db.write();
-
-  const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
-    expiresIn: 86400, // 24 hours
-  });
-
-  res.status(201).send({ auth: true, token });
-});
-
-app.post('/api/auth/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required' });
-  }
-
-  await db.read();
-  const user = db.data.users.find(user => user.email === email);
-  if (!user) {
-    return res.status(404).send('User not found.');
-  }
-
-  const passwordIsValid = await bcrypt.compare(password, user.password);
-  if (!passwordIsValid) {
-    return res.status(401).send({ auth: false, token: null });
-  }
-
-  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-    expiresIn: 86400, // 24 hours
-  });
-
-  res.status(200).send({ auth: true, token });
-});
-
-app.get('/api/protected', verifyToken, (req, res) => {
-    res.status(200).send({ message: 'This is a protected route.' });
-});
-
 
 // --- API ROUTES ---
 
