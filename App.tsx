@@ -5,6 +5,7 @@ import type { User, Booking, ClientProfile, CleanerProfile, Cleaner } from './ty
 import HomePage from './components/HomePage';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
+import SplashScreen from './components/SplashScreen';
 
 // Statically import all page components to resolve module loading errors.
 import CleanerProfilePage from './components/CleanerProfilePage';
@@ -44,6 +45,7 @@ const App: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [cleaners, setCleaners] = useState<Cleaner[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -57,22 +59,29 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      const fetchCleaners = async () => {
-        const response = await fetch('http://localhost:3001/api/cleaners');
-        const data = await response.json();
-        setCleaners(data);
+      const fetchData = async () => {
+        try {
+          const [cleanersResponse, bookingsResponse] = await Promise.all([
+            fetch('http://localhost:3001/api/cleaners'),
+            fetch('http://localhost:3001/api/bookings', {
+              headers: { Authorization: localStorage.getItem('token') || '' },
+            }),
+          ]);
+          const cleanersData = await cleanersResponse.json();
+          const bookingsData = await bookingsResponse.json();
+          setCleaners(cleanersData);
+          setBookings(bookingsData);
+        } catch (error) {
+          console.error("Failed to fetch initial data", error);
+        } finally {
+          // Add a small delay to prevent splash screen from flashing too quickly
+          setTimeout(() => setIsLoading(false), 500);
+        }
       };
 
-      const fetchBookings = async () => {
-        const response = await fetch('http://localhost:3001/api/bookings', {
-          headers: { Authorization: localStorage.getItem('token') || '' },
-        });
-        const data = await response.json();
-        setBookings(data);
-      };
-
-      fetchCleaners();
-      fetchBookings();
+      fetchData();
+    } else {
+      setIsLoading(false);
     }
   }, [isAuthenticated]);
 
@@ -152,6 +161,10 @@ const App: React.FC = () => {
   const handleSearch = (term: string) => {
     setSearchTerm(term);
   };
+
+  if (isLoading) {
+    return <SplashScreen />;
+  }
   
   if (!isAuthenticated) {
     if (page === 'login') {
