@@ -1,51 +1,5 @@
 {
-  "cleaners": [
-    {
-      "id": 1,
-      "name": "Maria Rodriguez",
-      "tagline": "Meticulous cleaning with a personal touch.",
-      "hourlyRate": 25,
-      "rating": 4.9,
-      "reviewsCount": 124,
-      "bio": "With over 5 years of dedicated experience, I bring a meticulous attention to detail to every home I have the privilege of cleaning. My philosophy is simple: treat every space as if it were my own. I'm known for being reliable, friendly, and consistently going the extra mile to ensure my clients are delighted with the results. Your home's cleanliness and your satisfaction are my highest priorities.",
-      "services": ["Deep Cleaning", "Residential", "Move-in/out", "Eco-Friendly"],
-      "specializedTasks": [
-        { "name": "Deep Oven Cleaning", "rate": 30, "unit": "per hour" },
-        { "name": "Interior Refrigerator Cleaning", "rate": 25, "unit": "per hour" }
-      ],
-      "imageUrl": "https://picsum.photos/id/1027/400/400",
-      "imageGallery": [
-        "https://picsum.photos/id/10/800/600",
-        "https://picsum.photos/id/11/800/600",
-        "https://picsum.photos/id/12/800/600"
-      ],
-      "reviews": [],
-      "location": { "lat": 43.0389, "lng": -87.9065 },
-      "startLocation": { "lat": 43.0289, "lng": -87.9165 },
-      "availability": {
-        "Monday": ["9 AM - 12 PM", "2 PM - 5 PM"],
-        "Tuesday": ["9 AM - 12 PM"],
-        "Wednesday": ["9 AM - 5 PM"],
-        "Thursday": [],
-        "Friday": ["9 AM - 1 PM"],
-        "Saturday": [],
-        "Sunday": []
-      }
-    }
-  ],
-  "bookings": [
-    {
-      "id": "job1",
-      "cleanerId": 1,
-      "clientName": "Alex Doe",
-      "clientAddress": "123 Main St, Milwaukee, WI",
-      "clientLocation": { "lat": 43.05, "lng": -87.95 },
-      "date": "2024-10-25T10:00:00.000Z",
-      "status": "active",
-      "service": "Full House Deep Clean",
-      "hours": 4,
-      "costDetails": { "subtotal": 100, "specializedTasksTotal": 0, "platformFee": 5, "total": 105 }
-    }
-  ],
+  "cleaners": [],
+  "bookings": [],
   "users": []
 }

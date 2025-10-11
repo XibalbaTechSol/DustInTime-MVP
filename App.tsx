@@ -6,6 +6,8 @@ import HomePage from './components/HomePage';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import SplashScreen from './components/SplashScreen';
+import { supabase } from './utils';
+import { Session } from '@supabase/supabase-js';
 
 // Statically import all page components to resolve module loading errors.
 import CleanerProfilePage from './components/CleanerProfilePage';
@@ -25,19 +27,10 @@ const mockClientProfile: ClientProfile = {
   location: { lat: 43.05, lng: -87.95 },
 };
 
-const mockClientUser: User = {
-  id: 'client-alex-doe',
-  name: 'Alex Doe',
-  email: 'alex.doe@example.com',
-  picture: 'https://picsum.photos/id/237/100/100',
-  role: 'client',
-  profile: mockClientProfile,
-};
-
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [page, setPage] = useState(isAuthenticated ? 'home' : 'login');
+  const [page, setPage] = useState('login');
 
   const [pageState, setPageState] = useState<{ page: string; props?: any }>({ page: 'home' });
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
@@ -48,23 +41,57 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      // In a real app, you would fetch the user profile here
-      setUser(mockClientUser);
-      setIsAuthenticated(true);
-      setPage('home');
-    }
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session) {
+        // In a real app, you would fetch the user profile here
+        const mockClientUser: User = {
+          id: session.user.id,
+          name: session.user.user_metadata.full_name || 'Alex Doe',
+          email: session.user.email || 'alex.doe@example.com',
+          picture: 'https://picsum.photos/id/237/100/100',
+          role: 'client',
+          profile: mockClientProfile,
+        };
+        setUser(mockClientUser);
+        setPage('home');
+      }
+      setIsLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) {
+        // In a real app, you would fetch the user profile here
+         const mockClientUser: User = {
+          id: session.user.id,
+          name: session.user.user_metadata.full_name || 'Alex Doe',
+          email: session.user.email || 'alex.doe@example.com',
+          picture: 'https://picsum.photos/id/237/100/100',
+          role: 'client',
+          profile: mockClientProfile,
+        };
+        setUser(mockClientUser);
+        setPage('home');
+      } else {
+        setUser(null);
+        setPage('login');
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (session) {
       const fetchData = async () => {
         try {
           const [cleanersResponse, bookingsResponse] = await Promise.all([
             fetch('http://localhost:3001/api/cleaners'),
             fetch('http://localhost:3001/api/bookings', {
-              headers: { Authorization: localStorage.getItem('token') || '' },
+              headers: { Authorization: `Bearer ${session.access_token}` },
             }),
           ]);
           const cleanersData = await cleanersResponse.json();
@@ -80,10 +107,8 @@ const App: React.FC = () => {
       };
 
       fetchData();
-    } else {
-      setIsLoading(false);
     }
-  }, [isAuthenticated]);
+  }, [session]);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -128,7 +153,7 @@ const App: React.FC = () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: localStorage.getItem('token') || '',
+        Authorization: `Bearer ${session?.access_token}` || '',
       },
       body: JSON.stringify(bookingDetails),
     });
@@ -141,12 +166,12 @@ const App: React.FC = () => {
     }, 1500);
   }
 
-  const handleUpdateBookingStatus = async (bookingId: string, status: 'upcoming' | 'active' | 'completed') => {
+  const handleUpdateBookingStatus = async (bookingId: string, status: 'upcoming' | 'actice' | 'completed') => {
     const response = await fetch(`http://localhost:3001/api/bookings/${bookingId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            Authorization: localStorage.getItem('token') || '',
+            Authorization: `Bearer ${session?.access_token}` || '',
         },
         body: JSON.stringify({ status }),
     });
@@ -166,13 +191,14 @@ const App: React.FC = () => {
     return <SplashScreen />;
   }
   
-  if (!isAuthenticated) {
+  if (!session) {
     if (page === 'login') {
-      return <LoginPage onLoginSuccess={() => { setIsAuthenticated(true); setPage('home'); }} onNavigateToRegister={() => setPage('register')} />;
+      return <LoginPage onLoginSuccess={() => setPage('home')} onNavigateToRegister={() => setPage('register')} />;
     }
     if (page === 'register') {
-      return <RegisterPage onRegisterSuccess={() => { setIsAuthenticated(true); setPage('home'); }} onNavigateToLogin={() => setPage('login')} />;
+      return <RegisterPage onRegisterSuccess={() => setPage('login')} onNavigateToLogin={() => setPage('login')} />;
     }
+    return <LoginPage onLoginSuccess={() => setPage('home')} onNavigateToRegister={() => setPage('register')} />;
   }
 
   const renderContent = () => {

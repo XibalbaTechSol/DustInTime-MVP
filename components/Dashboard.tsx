@@ -60,7 +60,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onNavigate, onClose, bookin
       <div className="space-y-8">
         {/* Active Job Section */}
         {activeBooking && (
-            <div className="bg-gradient-to-br from-primary to-indigo-700 p-6 rounded-xl shadow-2xl text-white animate-fade-in-up">
+            <div className="bg-gradient-to-br from-primary to-indigo-700 p-6 rounded-xl shadow-2xl text-white animate-fade-in-up mb-8 z-10">
               <h2 className="text-2xl font-bold mb-4 flex items-center">
                 <span className="relative flex h-3 w-3 mr-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
