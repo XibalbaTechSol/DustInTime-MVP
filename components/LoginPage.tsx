@@ -35,6 +35,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigateToRegis
             });
 
             const data = await response.json();
+            console.log('Login response:', data);
 
             if (response.ok) {
                 localStorage.setItem('token', data.token);
@@ -43,6 +44,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigateToRegis
                 setError(data.message || 'Login failed');
             }
         } catch (err) {
+            console.log('Login error:', err);
             setError('An error occurred. Please try again.');
         }
     };

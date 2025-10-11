@@ -74,8 +74,7 @@ const App: React.FC = () => {
         } catch (error) {
           console.error("Failed to fetch initial data", error);
         } finally {
-          // Add a small delay to prevent splash screen from flashing too quickly
-          setTimeout(() => setIsLoading(false), 500);
+          setIsLoading(false);
         }
       };
 

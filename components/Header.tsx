@@ -58,12 +58,40 @@ const Header: React.FC<HeaderProps> = ({ user, onNavigate, onToggleDashboard, th
           {/* Logo and Search */}
           <div className="flex items-center flex-1 min-w-0">
             <div 
-              className="flex-shrink-0 cursor-pointer flex items-center gap-2"
+              className="flex-shrink-0 cursor-pointer"
               onClick={() => handleNav('dashboard')}
               aria-label="Go to dashboard"
             >
-              <img src="/logo.png" alt="Dust in Time Logo" className="h-10 w-10" />
-              <span className="font-bold text-xl text-neutral-focus dark:text-base-200 hidden sm:inline">Dust in Time</span>
+              <svg
+                  className="h-8 w-8 text-primary"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  xmlns="http://www.w3.org/2000/svg"
+              >
+                  {/* Clock Face */}
+                  <circle cx="12" cy="12" r="10" />
+
+                  {/* Minute Hand (Mop/Broom) pointing to 10 mins (2 o'clock) */}
+                  <g transform="rotate(60 12 12)">
+                      {/* Handle */}
+                      <line x1="12" y1="12" x2="12" y2="4" />
+                      {/* Head */}
+                      <rect x="9.5" y="4" width="5" height="2" rx="0.5" fill="currentColor" stroke="none"/>
+                  </g>
+
+                  {/* Hour Hand (Spray Bottle) pointing to 10 o'clock */}
+                  <g transform="rotate(-60 12 12)">
+                      {/* Body */}
+                      <line x1="12" y1="12" x2="12" y2="8.5" />
+                      <rect x="10" y="6" width="4" height="3" rx="1" fill="currentColor" stroke="none" />
+                      {/* Nozzle */}
+                      <path d="M12 6 V 5 L 14 4.5" />
+                  </g>
+              </svg>
             </div>
             
             <div className="flex-1 max-w-lg ml-4">
