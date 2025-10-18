@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
-import type { Booking } from '../types';
+import React, { useEffect, useState } from 'react';
+import type { Booking, Point } from '../types';
 import CleanerNavigationMap from './CleanerNavigationMap';
+import { getRoute } from '../utils';
 
 /**
  * Props for the CleanerNavigationPage component.
@@ -20,52 +21,6 @@ interface CleanerNavigationPageProps {
 }
 
 /**
- * Represents a geographical point with latitude and longitude.
- * @interface Point
- */
-interface Point {
-    /** The latitude of the point. */
-    lat: number;
-    /** The longitude of the point. */
-    lng: number;
-}
-
-/**
- * Generates a simulated route between two points for display purposes.
- * This function creates a simple route with a right-angle turn.
- *
- * @param {Point} start The starting geographical point.
- * @param {Point} end The ending geographical point.
- * @param {number} [numPoints=50] The number of points to generate for the route polyline.
- * @returns {Point[]} An array of points representing the simulated route.
- */
-const generateFastestRoute = (start: Point, end: Point, numPoints: number = 50): Point[] => {
-    const routePoints: Point[] = [];
-    const waypoint = { lat: start.lat, lng: end.lng }; // Simulate a right-angle turn
-
-    const dist1 = Math.abs(start.lng - waypoint.lng);
-    const dist2 = Math.abs(waypoint.lat - end.lat);
-    const totalDist = dist1 + dist2;
-
-    if (totalDist === 0) return [start, end];
-
-    const pointsForSeg1 = Math.round((dist1 / totalDist) * numPoints);
-    const pointsForSeg2 = numPoints - pointsForSeg1;
-
-    for (let i = 0; i < pointsForSeg1; i++) {
-        const t = i / pointsForSeg1;
-        routePoints.push({ lat: start.lat, lng: start.lng + (waypoint.lng - start.lng) * t });
-    }
-
-    for (let i = 0; i < pointsForSeg2; i++) {
-        const t = i / pointsForSeg2;
-        routePoints.push({ lat: waypoint.lat + (end.lat - waypoint.lat) * t, lng: waypoint.lng });
-    }
-    routePoints.push(end);
-    return routePoints;
-};
-
-/**
  * A full-screen page component for cleaners to navigate to a job and manage its status.
  * It displays a map with the route, provides controls to start the job, and a modal
  * to confirm completion.
@@ -78,11 +33,19 @@ const CleanerNavigationPage: React.FC<CleanerNavigationPageProps> = ({ booking, 
     
     const [jobState, setJobState] = useState<'navigating' | 'in_progress'>(booking.status === 'active' ? 'in_progress' : 'navigating');
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [route, setRoute] = useState<Point[]>([]);
 
     const startPos = cleaner.startLocation;
     const endPos = clientLocation;
 
-    const route = useMemo(() => generateFastestRoute(startPos, endPos), [startPos, endPos]);
+    useEffect(() => {
+        const fetchRoute = async () => {
+            const newRoute = await getRoute(startPos, endPos);
+            setRoute(newRoute);
+        };
+
+        fetchRoute();
+    }, [startPos, endPos]);
 
     const handleMarkComplete = () => {
         onUpdateStatus(booking.id, 'completed');
