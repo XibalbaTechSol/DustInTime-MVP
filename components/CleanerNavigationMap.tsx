@@ -1,16 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
-
-/**
- * Represents a geographical point with latitude and longitude.
- * @interface Point
- */
-interface Point {
-    /** The latitude of the point. */
-    lat: number;
-    /** The longitude of the point. */
-    lng: number;
-}
+import { Point } from '../types';
 
 /**
  * Props for the CleanerNavigationMap component.

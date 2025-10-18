@@ -66,15 +66,9 @@ export interface Cleaner {
   /** An array of review objects associated with the cleaner. */
   reviews: Review[];
   /** The cleaner's geographical location. */
-  location: {
-    lat: number;
-    lng: number;
-  };
+  location: Point;
   /** The starting location for a job, used in the tracking simulation. */
-  startLocation: {
-    lat: number;
-    lng: number;
-  };
+  startLocation: Point;
   /** An object mapping days of the week to available time slots. */
   availability: {
     [day: string]: string[];
@@ -99,10 +93,7 @@ export interface ClientProfile {
   /** The number of bathrooms at the property. */
   bathrooms: number;
   /** The client's geographical location, used for job tracking. */
-  location: {
-    lat: number;
-    lng: number;
-  };
+  location: Point;
 }
 
 /**
@@ -188,6 +179,17 @@ export interface CostDetails {
  * Represents a single booking event.
  * @interface Booking
  */
+/**
+ * Represents a geographical point with latitude and longitude.
+ * @interface Point
+ */
+export interface Point {
+    /** The latitude of the point. */
+    lat: number;
+    /** The longitude of the point. */
+    lng: number;
+}
+
 export interface Booking {
   /** The unique identifier for the booking. */
   id: string;
@@ -196,10 +198,7 @@ export interface Booking {
   /** The name of the client who made the booking. */
   clientName: string;
   /** The geographical location of the client for the job. */
-  clientLocation: {
-    lat: number;
-    lng: number;
-  };
+  clientLocation: Point;
   /** The address of the client for the job. */
   clientAddress: string;
   /** The scheduled date and time of the booking in ISO format. */
