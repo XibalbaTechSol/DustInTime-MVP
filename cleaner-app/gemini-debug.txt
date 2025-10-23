@@ -1,0 +1,53 @@
+# Gemini Debugging Notes for DustInTime-MVP
+
+## Objective
+Get the DustInTime-MVP application running locally. This involves starting the backend and frontend servers and ensuring they can communicate with each other.
+
+## Debugging Plan
+
+### Step 1: Backend Server
+1.  **Run the backend server** with `nodemon` to automatically restart on file changes and log output.
+    - Command: `npm run dev`
+    - Directory: `/home/xibalbasolutions/Desktop/DustInTime-MVP/backend`
+2.  **Analyze the output** for rapid restarts or error messages. An infinite loop might cause `nodemon` to restart continuously.
+    - If there are errors, document them in this file.
+    - Common errors to look for:
+        - Missing environment variables (e.g., `GEMINI_API_KEY`, `JWT_SECRET`).
+        - Database connection issues.
+        - Port conflicts.
+        - Code that triggers a file change, causing a loop.
+3.  **Propose and apply fixes** for any identified errors.
+    - This may involve creating a `.env` file, installing missing dependencies, or modifying the code.
+
+### Step 2: Frontend Server
+1.  **Run the frontend server** in the foreground.
+    - Command: `npm run dev`
+    - Directory: `/home/xibalbasolutions/Desktop/DustInTime-MVP`
+2.  **Analyze the output** for any error messages.
+    - If there are errors, document them in this file.
+    - Common errors to look for:
+        - Missing environment variables (e.g., `GEMINI_API_KEY`).
+        - Issues with the Vite configuration.
+        - Port conflicts.
+3.  **Propose and apply fixes** for any identified errors.
+
+### Step 3: Application Testing
+1.  **Access the frontend** in a browser (the URL will be in the output of the `npm run dev` command, typically `http://localhost:5173`).
+2.  **Test the application's functionality**.
+    - Pay attention to the browser's developer console for any errors.
+    - Check for network errors in the developer console, which might indicate problems with the backend communication.
+3.  **Document any issues** and repeat the debugging cycle until the application is stable.
+
+## Debugging Log
+
+### Backend - Attempt 1
+- **Command:** `npm run dev` in `/home/xibalbasolutions/Desktop/DustInTime-MVP/backend`
+- **Output:** *(To be filled in after running the command)*
+- **Analysis:** *(To be filled in)*
+- **Fix:** *(To be filled in)*
+
+### Frontend - Attempt 1
+- **Command:** `npm run dev` in `/home/xibalbasolutions/Desktop/DustInTime-MVP`
+- **Output:** *(To be filled in after running the command)*
+- **Analysis:** *(To be filled in)*
+- **Fix:** *(To be filled in)*

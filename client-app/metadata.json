@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Dust in Time",
+  "description": "A production-ready SaaS platform to connect clients with professional cleaners, featuring Google authentication and a seamless booking experience. Your time is precious. Let us handle the dust.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

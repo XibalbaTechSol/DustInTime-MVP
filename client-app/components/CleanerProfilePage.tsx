@@ -1,0 +1,374 @@
+import React, { useState, useEffect } from 'react';
+import type { Cleaner, Review } from '../types';
+import StarRating from './StarRating';
+import BadgeDisplay from './BadgeDisplay';
+import { getCleanerBadge } from '../utils';
+import { BASE_URL } from '../constants';
+
+// Define the props for the component
+interface CleanerProfilePageProps {
+    cleanerId: string; // Changed to string to match backend IDs
+    onNavigate: (page: string, props?: any) => void;
+    from?: string;
+}
+
+const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+const CleanerProfilePage: React.FC<CleanerProfilePageProps> = ({ cleanerId, onNavigate, from }) => {
+    const [cleaner, setCleaner] = useState<Cleaner | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState('about');
+    const [isFavorited, setIsFavorited] = useState(false);
+
+    const [newReviewRating, setNewReviewRating] = useState(0);
+    const [newReviewComment, setNewReviewComment] = useState('');
+    const [submittingReview, setSubmittingReview] = useState(false);
+    const [reviewError, setReviewError] = useState<string | null>(null);
+    const [reviewSuccess, setReviewSuccess] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchCleaner = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${BASE_URL}/api/cleaners/${cleanerId}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (!response.ok) {
+                    throw new Error('Cleaner not found');
+                }
+                const data = await response.json();
+                setCleaner(data);
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCleaner();
+    }, [cleanerId]);
+
+    const handleSubmitReview = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmittingReview(true);
+        setReviewError(null);
+        setReviewSuccess(null);
+
+        if (!cleaner) return;
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setReviewError('You must be logged in to submit a review.');
+            setSubmittingReview(false);
+            return;
+        }
+
+        try {
+            // In a real app, you'd get the bookingId from the context of a completed booking
+            const bookingId = 'booking1'; // Placeholder
+            const clientId = 'client1'; // Placeholder
+
+            const response = await fetch(`${BASE_URL}/api/reviews`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    cleanerId: cleaner.id,
+                    clientId: clientId,
+                    bookingId: bookingId,
+                    rating: newReviewRating,
+                    comment: newReviewComment,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to submit review');
+            }
+
+            setNewReviewRating(0);
+            setNewReviewComment('');
+            setReviewSuccess('Review submitted successfully!');
+            // Optionally refetch cleaner data to update reviews list
+            // fetchCleaner();
+        } catch (err: any) {
+            setReviewError(err.message);
+        } finally {
+            setSubmittingReview(false);
+        }
+    };
+
+    if (loading) {
+        return <div className="text-center p-12">Loading...</div>;
+    }
+
+    if (error) {
+        return <div className="text-center p-12">{error}</div>;
+    }
+
+    if (!cleaner) {
+        return <div className="text-center p-12">Cleaner not found.</div>;
+    }
+
+    const badge = getCleanerBadge(cleaner);
+
+    const toggleFavorite = () => {
+        setIsFavorited(prev => !prev);
+        // In a real app, this would also make an API call to save the user's preference.
+    };
+
+    const handleBookNow = () => {
+        onNavigate('booking', { cleanerId: cleaner.id });
+    };
+
+    const handleMessage = () => {
+        onNavigate('messages', { conversationId: `client-${cleaner.id}` });
+    };
+
+    const averageRating = cleaner.reviews && cleaner.reviews.length > 0
+        ? cleaner.reviews.reduce((sum, review) => sum + review.rating, 0) / cleaner.reviews.length
+        : cleaner.rating; // Fallback to existing rating if no reviews
+
+    return (
+        <div className="bg-base-200">
+            <div className="container mx-auto px-4 py-8 md:py-12 animate-fade-in-up">
+                 {from === 'map' && (
+                    <button
+                        onClick={() => onNavigate('home')}
+                        className="mb-4 flex items-center text-sm font-semibold text-slate-600 hover:text-primary dark:hover:text-primary-focus transition-colors"
+                    >
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+                        Back to Map
+                    </button>
+                )}
+                <div className="bg-base-100 rounded-2xl shadow-xl overflow-hidden">
+                    {/* Header Section */}
+                    <div className="p-8 md:flex md:items-center md:space-x-8 bg-gradient-to-r from-slate-50 to-slate-100">
+                        <img
+                            src={cleaner.imageUrl}
+                            alt={`Profile of ${cleaner.name}`}
+                            className="w-32 h-32 rounded-full object-cover mx-auto md:mx-0 ring-4 ring-white shadow-lg"
+                        />
+                        <div className="text-center md:text-left mt-4 md:mt-0 flex-grow">
+                            <div className="flex items-center justify-center md:justify-start gap-3">
+                                <h1 className="text-3xl md:text-4xl font-bold text-neutral-focus">{cleaner.name}</h1>
+                                <button
+                                    onClick={toggleFavorite}
+                                    className="p-2 rounded-full text-slate-400 hover:bg-red-100 dark:hover:bg-neutral-focus group transition-colors duration-200"
+                                    aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className={`h-7 w-7 transition-all duration-200 transform group-hover:text-red-500 ${isFavorited ? 'text-red-500 scale-110' : ''}`}
+                                        fill={isFavorited ? 'currentColor' : 'none'}
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                </button>
+                            </div>
+                             {badge && (
+                                <div className="mt-2 flex justify-center md:justify-start">
+                                    <BadgeDisplay badge={badge} />
+                                </div>
+                            )}
+                            <p className="text-lg text-slate-600 mt-2">{cleaner.tagline}</p>
+                            <div className="flex items-center justify-center md:justify-start space-x-4 mt-3">
+                                <div className="flex items-center space-x-1">
+                                    <StarRating rating={averageRating} />
+                                    <span className="text-slate-600 font-semibold">{averageRating.toFixed(1)}</span>
+                                </div>
+                                <span className="text-slate-500">({cleaner.reviews ? cleaner.reviews.length : 0} reviews)</span>
+                            </div>
+                        </div>
+                        <div className="mt-6 md:mt-0 flex-shrink-0 flex flex-col items-stretch md:items-end space-y-3">
+                             <button
+                                onClick={handleBookNow}
+                                className="w-full bg-primary text-primary-content font-bold py-3 px-8 rounded-lg hover:bg-primary-focus transition-all duration-300 transform hover:scale-105 shadow-lg"
+                            >
+                                Book Now
+                            </button>
+                             <button
+                                onClick={handleMessage}
+                                className="w-full bg-base-100 text-neutral-focus font-semibold py-2 px-6 rounded-lg hover:bg-base-200 border border-slate-300 transition-all duration-300 text-sm"
+                            >
+                                Message {cleaner.name.split(' ')[0]}
+                            </button>
+                            <p className="text-center md:text-right text-slate-600 mt-2 text-xl font-bold">${cleaner.hourlyRate}<span className="font-normal text-sm">/hr</span></p>
+                        </div>
+                    </div>
+
+                    {/* Tabs */}
+                    <div className="border-b border-slate-200">
+                        <nav className="flex space-x-6 px-8">
+                            <button
+                                onClick={() => setActiveTab('about')}
+                                className={`py-4 px-1 font-semibold border-b-2 transition-colors ${activeTab === 'about' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+                            >
+                                About
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('reviews')}
+                                className={`py-4 px-1 font-semibold border-b-2 transition-colors ${activeTab === 'reviews' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+                            >
+                                Reviews ({cleaner.reviews ? cleaner.reviews.length : 0})
+                            </button>
+                             <button
+                                onClick={() => setActiveTab('gallery')}
+                                className={`py-4 px-1 font-semibold border-b-2 transition-colors ${activeTab === 'gallery' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+                            >
+                                Gallery
+                            </button>
+                        </nav>
+                    </div>
+
+                    {/* Tab Content */}
+                    <div className="p-8">
+                        {activeTab === 'about' && (
+                             <div className="space-y-12">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-neutral-focus mb-4">About Me</h2>
+                                    <p className="text-slate-600 whitespace-pre-line leading-relaxed">{cleaner.bio}</p>
+                                </div>
+
+                                <div className="border-t pt-8">
+                                    <h2 className="text-2xl font-bold text-neutral-focus mb-4">Services Offered</h2>
+                                    <div className="flex flex-wrap gap-3">
+                                        {cleaner.services.map(service => (
+                                            <span key={service} className="bg-primary/10 text-primary-focus font-semibold px-4 py-2 rounded-full text-sm">
+                                                {service}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {cleaner.specializedTasks && cleaner.specializedTasks.length > 0 && (
+                                     <div className="border-t pt-8">
+                                        <h2 className="text-2xl font-bold text-neutral-focus mb-4">Specialized Services</h2>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {cleaner.specializedTasks.map(task => (
+                                                <div key={task.name} className="bg-slate-50 border border-slate-200 rounded-lg p-4 flex justify-between items-center">
+                                                    <div>
+                                                        <p className="font-semibold text-neutral-focus">{task.name}</p>
+                                                        <p className="text-sm text-slate-500">Additional service</p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="font-bold text-primary">${task.rate}</p>
+                                                        <p className="text-xs text-slate-500">{task.unit}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+
+                                <div className="border-t pt-8">
+                                    <h2 className="text-2xl font-bold text-neutral-focus mb-4">Weekly Availability</h2>
+                                    <div className="bg-slate-50 p-6 rounded-lg border grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
+                                        {DAYS_OF_WEEK.map(day => {
+                                            const slots = cleaner.availability[day] || [];
+                                            return (
+                                                <div key={day}>
+                                                    <p className="font-semibold text-slate-800">{day}</p>
+                                                    {slots.length > 0 ? (
+                                                        <div className="flex flex-wrap gap-2 mt-1">
+                                                            {slots.map(slot => (
+                                                                <span key={slot} className="text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">{slot}</span>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-sm text-slate-400 italic mt-1">Unavailable</p>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        {activeTab === 'reviews' && (
+                             <div>
+                                <h2 className="text-2xl font-bold text-neutral-focus mb-6">Reviews</h2>
+                                <form onSubmit={handleSubmitReview} className="mb-8 p-6 bg-base-200 rounded-lg shadow-inner">
+                                    <h3 className="text-xl font-bold text-neutral-focus mb-4">Submit a Review</h3>
+                                    {reviewError && <div className="bg-red-100 text-red-700 p-3 rounded-lg mb-4">{reviewError}</div>}
+                                    {reviewSuccess && <div className="bg-green-100 text-green-700 p-3 rounded-lg mb-4">{reviewSuccess}</div>}
+                                    <div className="mb-4">
+                                        <label htmlFor="rating" className="block text-sm font-medium text-neutral-focus mb-2">Rating</label>
+                                        <StarRating rating={newReviewRating} onRatingChange={setNewReviewRating} editable={true} />
+                                    </div>
+                                    <div className="mb-4">
+                                        <label htmlFor="comment" className="block text-sm font-medium text-neutral-focus mb-2">Comment</label>
+                                        <textarea
+                                            id="comment"
+                                            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-primary focus:border-primary bg-base-100 text-neutral-focus"
+                                            rows={4}
+                                            value={newReviewComment}
+                                            onChange={(e) => setNewReviewComment(e.target.value)}
+                                            placeholder="Share your experience..."
+                                        ></textarea>
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="bg-primary text-primary-content font-bold py-3 px-6 rounded-lg hover:bg-primary-focus transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled={submittingReview || newReviewRating === 0}
+                                    >
+                                        {submittingReview ? 'Submitting...' : 'Submit Review'}
+                                    </button>
+                                </form>
+
+                                <div className="space-y-6">
+                                    {cleaner.reviews && cleaner.reviews.length > 0 ? cleaner.reviews.map((review: Review) => (
+                                        <div key={review.id} className="flex space-x-4">
+                                            <img src={review.clientId} alt={review.clientId} className="w-12 h-12 rounded-full object-cover"/>
+                                            <div>
+                                                <div className="flex items-center space-x-2">
+                                                    <p className="font-bold text-neutral-focus">{review.clientId}</p>
+                                                    <span className="text-slate-400">&bull;</span>
+                                                    <p className="text-sm text-slate-500">{new Date(review.created_at).toLocaleDateString()}</p>
+                                                </div>
+                                                <div className="mt-1">
+                                                    <StarRating rating={review.rating} />
+                                                </div>
+                                                <p className="mt-2 text-slate-600">{review.comment}</p>
+                                            </div>
+                                        </div>
+                                    )) : (
+                                        <p className="text-slate-500">This cleaner doesn't have any reviews yet.</p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                        {activeTab === 'gallery' && (
+                            <div>
+                                <h2 className="text-2xl font-bold text-neutral-focus mb-4">Photo Gallery</h2>
+                                {cleaner.imageGallery && cleaner.imageGallery.length > 0 ? (
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                        {cleaner.imageGallery.map((imgUrl, index) => (
+                                            <img
+                                                key={index}
+                                                src={imgUrl}
+                                                alt={`Gallery image ${index + 1}`}
+                                                className="rounded-lg object-cover w-full h-48 hover:opacity-90 transition-opacity cursor-pointer"
+                                            />
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-slate-500">This cleaner hasn't uploaded any photos yet.</p>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default CleanerProfilePage;
