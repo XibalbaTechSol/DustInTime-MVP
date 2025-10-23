@@ -29,6 +29,7 @@ const App: React.FC = () => {
   const [cleaners, setCleaners] = useState<Cleaner[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [authError, setAuthError] = useState('');
 
   const handleLoginSuccess = async () => {
     const token = localStorage.getItem('token');
@@ -43,11 +44,13 @@ const App: React.FC = () => {
           setIsAuthenticated(true);
           setPage('home');
         } else {
+          setAuthError('Login failed');
           localStorage.removeItem('token');
           setIsAuthenticated(false);
           setPage('login');
         }
       } catch (error) {
+        setAuthError('An error occurred. Please try again.');
         console.error("Failed to fetch user profile", error);
         localStorage.removeItem('token');
         setIsAuthenticated(false);
@@ -216,13 +219,13 @@ const App: React.FC = () => {
 
   if (!isAuthenticated) {
     if (page === 'login') {
-      return <LoginPage onLoginSuccess={handleLoginSuccess} onNavigateToRegister={() => setPage('register')} />;
+      return <LoginPage onLoginSuccess={handleLoginSuccess} onNavigateToRegister={() => setPage('register')} error={authError} />;
     }
     if (page === 'register') {
-      return <RegisterPage onRegisterSuccess={handleLoginSuccess} onNavigateToLogin={() => setPage('login')} />;
+      return <RegisterPage onRegisterSuccess={handleLoginSuccess} onNavigateToLogin={() => setPage('login')} error={authError} />;
     }
     // Default to login if not authenticated and page is not login/register
-    return <LoginPage onLoginSuccess={handleLoginSuccess} onNavigateToRegister={() => setPage('register')} />;
+    return <LoginPage onLoginSuccess={handleLoginSuccess} onNavigateToRegister={() => setPage('register')} error={authError} />;
   }
 
   const renderContent = () => {
