@@ -10,6 +10,8 @@ interface RegisterPageProps {
   onRegisterSuccess: () => void;
   /** Callback function to navigate to the login page. */
   onNavigateToLogin: () => void;
+  /** Error message to be displayed. */
+  error?: string;
 }
 
 /**
@@ -19,7 +21,7 @@ interface RegisterPageProps {
  * @param {RegisterPageProps} props The props for the component.
  * @returns {React.ReactElement} The rendered registration page.
  */
-const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onNavigateToLogin }) => {
+const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onNavigateToLogin, error: authError }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -93,7 +95,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onNaviga
                             required
                         />
                     </div>
-                    {error && <p className="text-sm text-center text-red-500">{error}</p>}
+                    {(error || authError) && <p data-testid="error-message" className="text-sm text-center text-red-500">{error || authError}</p>}
                     <div>
                         <button type="submit" className="w-full btn btn-primary">
                             Register
