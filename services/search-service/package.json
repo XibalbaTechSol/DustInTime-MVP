@@ -1,0 +1,13 @@
+{
+  "name": "search-service",
+  "version": "1.0.0",
+  "description": "Search service for DustInTime",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "@elastic/elasticsearch": "^7.15.0"
+  }
+}

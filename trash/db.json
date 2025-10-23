@@ -1,0 +1,224 @@
+// Original location: /home/xibalbasolutions/Desktop/DustInTime-MVP/backend/db.json
+{
+  "cleaners": [
+    {
+      "id": 1,
+      "name": "Jacob Vickers",
+      "tagline": "Admin Cleaner.",
+      "hourlyRate": 50,
+      "rating": 5.0,
+      "reviewsCount": 200,
+      "bio": "I am the admin cleaner.",
+      "services": ["All"],
+      "location": { "lat": 42.7, "lng": -87.8 },
+      "availability": {
+        "Monday": ["9am - 5pm"],
+        "Tuesday": ["9am - 5pm"],
+        "Wednesday": ["9am - 5pm"],
+        "Thursday": ["9am - 5pm"],
+        "Friday": ["9am - 5pm"]
+      },
+      "reviews": [],
+      "imageGallery": []
+    },
+    {
+      "id": 2,
+      "name": "Racine Cleaner 1",
+      "tagline": "Experienced and reliable.",
+      "hourlyRate": 25,
+      "rating": 4.8,
+      "reviewsCount": 120,
+      "bio": "I am a professional cleaner with 5 years of experience. I am reliable, detail-oriented, and passionate about my work.",
+      "services": ["Standard Cleaning", "Deep Cleaning", "Move-in/out Cleaning"],
+      "location": { "lat": 42.72, "lng": -87.78 },
+      "availability": {
+        "Monday": ["9am - 12pm", "2pm - 5pm"],
+        "Wednesday": ["10am - 4pm"],
+        "Friday": ["9am - 5pm"]
+      },
+      "reviews": [
+        {
+          "id": 1,
+          "authorName": "Client 1",
+          "rating": 5,
+          "comment": "Racine Cleaner 1 is amazing! My house has never been cleaner."
+        }
+      ],
+      "imageGallery": []
+    },
+    {
+      "id": 3,
+      "name": "Racine Cleaner 2",
+      "tagline": "Affordable and efficient.",
+      "hourlyRate": 20,
+      "rating": 4.5,
+      "reviewsCount": 80,
+      "bio": "I provide top-notch cleaning services at a great price. I am fast, efficient, and always on time.",
+      "services": ["Standard Cleaning", "Move-in/out Cleaning", "Weekly Service"],
+      "location": { "lat": 42.73, "lng": -87.79 },
+      "availability": {
+        "Tuesday": ["8am - 2pm"],
+        "Thursday": ["8am - 2pm"],
+        "Saturday": ["10am - 4pm"]
+      },
+      "reviews": [],
+      "imageGallery": []
+    },
+    {
+      "id": 4,
+      "name": "Racine Cleaner 3",
+      "tagline": "Eco-friendly cleaning.",
+      "hourlyRate": 30,
+      "rating": 4.9,
+      "reviewsCount": 150,
+      "bio": "I use only eco-friendly products for a safe and healthy clean. Perfect for families with children and pets.",
+      "services": ["Deep Cleaning", "Green Cleaning", "Kitchen Cleaning"],
+      "location": { "lat": 42.71, "lng": -87.77 },
+      "availability": {
+        "Monday": ["10am - 6pm"],
+        "Wednesday": ["10am - 6pm"],
+        "Friday": ["10am - 6pm"]
+      },
+      "reviews": [],
+      "imageGallery": []
+    }
+  ],
+  "bookings": [],
+  "users": [
+    {
+      "id": "cleaner-jacob-vickers",
+      "name": "Jacob Vickers",
+      "email": "xibalbasolutions@gmail.com",
+      "password": "password_jacob",
+      "role": "cleaner",
+      "profile": {
+        "hourlyRate": 50,
+        "bio": "I am the admin cleaner.",
+        "services": ["All"],
+        "serviceArea": "Racine, WI"
+      }
+    },
+    {
+      "id": "client-test-user",
+      "name": "Test Client",
+      "email": "client@example.com",
+      "password": "password_client",
+      "role": "client",
+      "profile": {
+        "address": "456 Oak Ave, Milwaukee, WI",
+        "propertyType": "House",
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "location": { "lat": 43.06, "lng": -87.96 }
+      }
+    },
+    {
+      "id": "cleaner-1",
+      "name": "Racine Cleaner 1",
+      "email": "cleaner1@example.com",
+      "password": "password_cleaner1",
+      "role": "cleaner",
+      "profile": {
+        "hourlyRate": 25,
+        "bio": "I am a professional cleaner with 5 years of experience.",
+        "services": ["Standard Cleaning", "Deep Cleaning"],
+        "serviceArea": "Racine, WI"
+      }
+    },
+    {
+      "id": "cleaner-2",
+      "name": "Racine Cleaner 2",
+      "email": "cleaner2@example.com",
+      "password": "password_cleaner2",
+      "role": "cleaner",
+      "profile": {
+        "hourlyRate": 20,
+        "bio": "I provide top-notch cleaning services at a great price.",
+        "services": ["Standard Cleaning", "Move-in/out Cleaning"],
+        "serviceArea": "Racine, WI"
+      }
+    },
+    {
+      "id": "cleaner-3",
+      "name": "Racine Cleaner 3",
+      "email": "cleaner3@example.com",
+      "password": "password_cleaner3",
+      "role": "cleaner",
+      "profile": {
+        "hourlyRate": 30,
+        "bio": "I use only eco-friendly products for a safe and healthy clean.",
+        "services": ["Deep Cleaning", "Green Cleaning"],
+        "serviceArea": "Racine, WI"
+      }
+    },
+    {
+      "id": "client-1",
+      "name": "Racine Client 1",
+      "email": "client1@example.com",
+      "password": "password_client1",
+      "role": "client",
+      "profile": {
+        "address": "123 Main St, Racine, WI",
+        "propertyType": "House",
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "location": { "lat": 42.725, "lng": -87.785 }
+      }
+    },
+    {
+      "id": "client-2",
+      "name": "Racine Client 2",
+      "email": "client2@example.com",
+      "password": "password_client2",
+      "role": "client",
+      "profile": {
+        "address": "456 Oak Ave, Racine, WI",
+        "propertyType": "Apartment",
+        "bedrooms": 2,
+        "bathrooms": 1,
+        "location": { "lat": 42.715, "lng": -87.775 }
+      }
+    },
+    {
+      "id": "client-3",
+      "name": "Racine Client 3",
+      "email": "client3@example.com",
+      "password": "password_client3",
+      "role": "client",
+      "profile": {
+        "address": "789 Pine St, Racine, WI",
+        "propertyType": "Townhouse",
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "location": { "lat": 42.735, "lng": -87.795 }
+      }
+    },
+    {
+      "id": "cleaner-admin",
+      "name": "Admin Cleaner",
+      "email": "admin@example.com",
+      "password": "password",
+      "role": "cleaner",
+      "profile": {
+        "hourlyRate": 50,
+        "bio": "Admin cleaner account.",
+        "services": ["All"],
+        "serviceArea": "Anywhere"
+      }
+    },
+    {
+      "id": "client-admin",
+      "name": "Admin Client",
+      "email": "admin@example.com",
+      "password": "password",
+      "role": "client",
+      "profile": {
+        "address": "Admin Address",
+        "propertyType": "House",
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "location": { "lat": 0, "lng": 0 }
+      }
+    }
+  ]
+}

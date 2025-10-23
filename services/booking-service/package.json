@@ -1,0 +1,18 @@
+{
+  "name": "booking-service",
+  "version": "1.0.0",
+  "description": "Booking service for DustInTime",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "pg": "^8.7.1",
+    "kafkajs": "^1.15.0",
+    "dotenv": "^10.0.0",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^8.5.1",
+    "joi": "^17.4.2"
+  }
+}

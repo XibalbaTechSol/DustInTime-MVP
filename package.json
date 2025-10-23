@@ -1,24 +1,16 @@
 {
-  "name": "copy-of-dust-in-time",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "dustintime-mvp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "seed.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "seed": "node seed.js"
   },
   "dependencies": {
-    "@mapbox/polyline": "^1.2.1",
-    "@types/mapbox__polyline": "^1.0.5",
-    "leaflet": "1.9.4",
-    "leaflet.markercluster": "1.4.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "bcryptjs": "^2.4.3",
+    "pg": "^8.7.1"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "@playwright/test": "^1.56.1"
   }
 }

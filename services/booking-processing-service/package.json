@@ -1,0 +1,16 @@
+{
+  "name": "booking-processing-service",
+  "version": "1.0.0",
+  "description": "Booking processing service for DustInTime",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "kafkajs": "^1.15.0",
+    "axios": "^0.21.4",
+    "redis": "^3.1.2",
+    "redlock": "^4.2.0",
+    "axios-retry": "^3.2.4"
+  }
+}

@@ -1,0 +1,180 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "booking-requests:1:1,booking-requests-dlq:1:1"
+
+  postgres:
+    image: postgres:13
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dustintime
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+
+  redis:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+
+  api-gateway:
+    build: ./services/api-gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - search-service
+      - cleaner-service
+      - booking-service
+      - review-service
+      - websocket-service
+      - payment-service
+    env_file:
+      - ./.env
+
+  search-service:
+    build: ./services/search-service
+    depends_on:
+      - elasticsearch
+    env_file:
+      - ./.env
+
+  cleaner-service:
+    build: ./services/cleaner-service
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+
+  booking-service:
+    build: ./services/booking-service
+    depends_on:
+      - postgres
+      - kafka
+    env_file:
+      - ./.env
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+
+  booking-processing-service:
+    build: ./services/booking-processing-service
+    depends_on:
+      - kafka
+      - notification-service
+      - redis
+    env_file:
+      - ./.env
+
+  cleaner-location-service:
+    build: ./services/cleaner-location-service
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
+
+  notification-service:
+    build: ./services/notification-service
+    env_file:
+      - ./.env
+
+  ranking-analyzer-service:
+    build: ./services/ranking-analyzer-service
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
+
+  review-service:
+    build: ./services/review-service
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
+
+  websocket-service:
+    build: ./services/websocket-service
+    ports:
+      - "3008:3008"
+    env_file:
+      - ./.env
+
+  payment-service:
+    build: ./services/payment-service
+    ports:
+      - "3009:3009"
+    env_file:
+      - ./.env
+
+  favorites-service:
+    build: ./services/favorites-service
+    ports:
+      - "3011:3011"
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
+
+  seed:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: node seed.js
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
+
+  client-app:
+    build:
+      context: ./client-app
+      args:
+        VITE_API_BASE_URL: http://api-gateway:3000
+    ports:
+      - "8082:80"
+    depends_on:
+      - api-gateway
+    env_file:
+      - ./.env
+
+  cleaner-app:
+    build:
+      context: ./cleaner-app
+      args:
+        VITE_API_BASE_URL: http://api-gateway:3000
+    ports:
+      - "8081:80"
+    depends_on:
+      - api-gateway
+    env_file:
+      - ./.env
+
+volumes:
+  postgres_data:
