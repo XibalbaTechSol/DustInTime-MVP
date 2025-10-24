@@ -1,46 +1,27 @@
 const { Pool } = require('pg');
+const fs = require('fs');
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 const pool = new Pool({
-  user: process.env.DB_USER || 'user',
-  host: process.env.DB_HOST || 'postgres',
-  database: process.env.DB_NAME || 'dustintime',
-  password: process.env.DB_PASSWORD || 'password',
-  port: process.env.DB_PORT || 5432,
+  user: process.env.POSTGRES_USER || 'user',
+  host: process.env.POSTGRES_HOST || 'postgres',
+  database: process.env.POSTGRES_DB || 'dustintime',
+  password: process.env.POSTGRES_PASSWORD || 'password',
+  port: process.env.POSTGRES_PORT || 5432,
 });
 
-async function setupDb() {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS users (
-      id TEXT PRIMARY KEY,
-      name TEXT,
-      email TEXT UNIQUE,
-      password TEXT,
-      picture TEXT,
-      role TEXT,
-      address TEXT,
-      propertyType TEXT,
-      bedrooms INTEGER,
-      bathrooms INTEGER,
-      lat REAL,
-      lng REAL,
-      onboardingComplete BOOLEAN DEFAULT false
-    );
+const initScript = fs.readFileSync(path.join(__dirname, 'db/init.sql')).toString();
 
-    CREATE TABLE IF NOT EXISTS cleaners (
-      id TEXT PRIMARY KEY,
-      name TEXT,
-      picture TEXT,
-      rating REAL,
-      hourlyRate REAL,
-      services TEXT,
-      location_lat REAL,
-      location_lng REAL
-    );
-  `);
-  console.log('Database schema initialized for cleaner-service');
-  return pool;
-}
+const initializeDatabase = async () => {
+  try {
+    await pool.query(initScript);
+    console.log('Database initialized successfully.');
+  } catch (err) {
+    console.error('Error initializing database', err.stack);
+  }
+};
 
-module.exports = setupDb;
+module.exports = {
+  query: (text, params) => pool.query(text, params),
+  initializeDatabase,
+};

@@ -1,48 +1,36 @@
+require('dotenv').config();
 const express = require('express');
-const http = require('http');
-const { createProxyMiddleware } = require('http-proxy-middleware');
-const errorHandler = require('./middleware/errorHandler');
-const verifyToken = require('./middleware/auth');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
-const bodyParser = require('body-parser');
-require('dotenv').config();
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const routes = require('./config/routes');
+const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
-const server = http.createServer(app);
+const port = process.env.PORT || 3000;
 
-app.use(bodyParser.json());
+// --- CORE MIDDLEWARE ---
+app.use(cors());
+app.use(rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+}));
+app.use(express.json());
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  standardHeaders: true,
-  legacyHeaders: false,
+// --- PROXY ROUTES ---
+routes.forEach(route => {
+    app.use(route.path, createProxyMiddleware(route.options));
 });
 
-app.use(limiter);
-app.use(cors());
+app.get('/', (req, res) => {
+    res.send('API Gateway is running!');
+});
 
-// Proxy for HTTP services
-app.use('/api/search', createProxyMiddleware({ target: 'http://search-service:3001', changeOrigin: true }));
-app.use('/api/cleaners', verifyToken, createProxyMiddleware({ target: 'http://localhost:3002', changeOrigin: true }));
-app.use('/api/bookings', verifyToken, createProxyMiddleware({ target: 'http://booking-service:3003', changeOrigin: true }));
-app.use('/api/auth', createProxyMiddleware({ target: 'http://localhost:3002', changeOrigin: true }));
-app.use('/api/onboarding', verifyToken, createProxyMiddleware({ target: 'http://localhost:3002', changeOrigin: true }));
-app.use('/api/reviews', verifyToken, createProxyMiddleware({ target: 'http://review-service:3007', changeOrigin: true }));
-app.use('/api/payments', verifyToken, createProxyMiddleware({ target: 'http://payment-service:3009', changeOrigin: true }));
-app.use('/api/favorites', verifyToken, createProxyMiddleware({ target: 'http://favorites-service:3011', changeOrigin: true }));
-
-// Proxy for WebSocket service
-app.use('/socket.io', createProxyMiddleware({
-  target: 'http://websocket-service:3008',
-  changeOrigin: true,
-  ws: true, // Enable WebSocket proxying
-  logLevel: 'debug',
-}));
-
+// --- ERROR HANDLING ---
 app.use(errorHandler);
 
-server.listen(3000, () => {
-  console.log('API Gateway started on port 3000');
+app.listen(port, () => {
+    console.log(`API Gateway is running on http://localhost:${port}`);
 });

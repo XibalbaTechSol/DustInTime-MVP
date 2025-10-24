@@ -1,27 +1,27 @@
 const { Pool } = require('pg');
+const fs = require('fs');
+const path = require('path');
 
 const pool = new Pool({
-  user: process.env.DB_USER || 'user',
-  host: process.env.DB_HOST || 'postgres',
-  database: process.env.DB_NAME || 'dustintime',
-  password: process.env.DB_PASSWORD || 'password',
-  port: process.env.DB_PORT || 5432,
+  user: process.env.POSTGRES_USER || 'user',
+  host: process.env.POSTGRES_HOST || 'postgres',
+  database: process.env.POSTGRES_DB || 'dustintime',
+  password: process.env.POSTGRES_PASSWORD || 'password',
+  port: process.env.POSTGRES_PORT || 5432,
 });
 
-async function setupDb() {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS reviews (
-      id TEXT PRIMARY KEY,
-      cleanerId TEXT,
-      clientId TEXT,
-      bookingId TEXT,
-      rating REAL,
-      comment TEXT,
-      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-  `);
-  console.log('Database schema initialized for review-service');
-  return pool;
-}
+const initScript = fs.readFileSync(path.join(__dirname, 'db/init.sql')).toString();
 
-module.exports = setupDb;
+const initializeDatabase = async () => {
+  try {
+    await pool.query(initScript);
+    console.log('Database initialized successfully.');
+  } catch (err) {
+    console.error('Error initializing database', err.stack);
+  }
+};
+
+module.exports = {
+  query: (text, params) => pool.query(text, params),
+  initializeDatabase,
+};
