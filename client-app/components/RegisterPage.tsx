@@ -60,6 +60,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onNaviga
                         </label>
                         <input
                             type="text"
+                            name="name"
                             placeholder="Full Name"
                             className="w-full input input-bordered"
                             value={name}
@@ -73,6 +74,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onNaviga
                         </label>
                         <input
                             type="email"
+                            name="email"
                             placeholder="Email Address"
                             className="w-full input input-bordered"
                             value={email}
@@ -86,6 +88,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onNaviga
                         </label>
                         <input
                             type="password"
+                            name="password"
                             placeholder="Enter Password"
                             className="w-full input input-bordered"
                             value={password}

@@ -6,11 +6,10 @@
   "scripts": {
     "seed": "node seed.js"
   },
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "pg": "^8.7.1"
-  },
   "devDependencies": {
-    "@playwright/test": "^1.56.1"
+    "@playwright/test": "^1.56.1",
+    "@types/bcryptjs": "^2.4.6",
+    "bcryptjs": "^3.0.2",
+    "pg": "^8.16.3"
   }
 }

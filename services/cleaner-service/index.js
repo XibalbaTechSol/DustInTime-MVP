@@ -1,5 +1,7 @@
-const express = require('express');
 const dotenv = require('dotenv');
+const path =require('path');
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -7,13 +9,13 @@ const setupDb = require('./db');
 const axios = require('axios');
 const Joi = require('joi');
 const errorHandler = require('./middleware/errorHandler');
-
-dotenv.config();
+const bodyParser = require('body-parser');
 
 const app = express();
 const port = process.env.PORT || 3002;
 
 app.use(cors());
+app.use(bodyParser.json());
 app.use(express.json());
 
 let dbPool;
@@ -53,13 +55,13 @@ const onboardingSchema = Joi.object({
 async function initializeApp() {
   dbPool = await setupDb();
 
-  const indexCleaner = async (cleaner) => {
-    try {
-      await axios.post('http://search-service:3001/api/search/index-cleaner', cleaner);
-    } catch (error) {
-      console.error('Error indexing cleaner:', error.message);
-    }
-  };
+  // const indexCleaner = async (cleaner) => {
+  //   try {
+  //     await axios.post('http://search-service:3001/api/search/index-cleaner', cleaner);
+  //   } catch (error) {
+  //     console.error('Error indexing cleaner:', error.message);
+  //   }
+  // };
 
   // --- AUTHENTICATION ---
 
@@ -69,7 +71,7 @@ async function initializeApp() {
       return res.status(403).send({ message: 'No token provided.' });
     }
 
-    jwt.verify(token.split(' ')[1], process.env.JWT_SECRET, (err, decoded) => {
+    jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET, (err, decoded) => {
       if (err) {
         return res.status(401).send({ message: 'Unauthorized.' });
       }
@@ -107,10 +109,11 @@ async function initializeApp() {
         bathrooms: 1,
         lat: 0,
         lng: 0,
+        onboardingComplete: false,
       };
 
-      await dbPool.query('INSERT INTO users (id, name, email, password, picture, role, address, propertyType, bedrooms, bathrooms, lat, lng) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)', 
-        [newUser.id, newUser.name, newUser.email, newUser.password, newUser.picture, newUser.role, newUser.address, newUser.propertyType, newUser.bedrooms, newUser.bathrooms, newUser.lat, newUser.lng]);
+      await dbPool.query('INSERT INTO users (id, name, email, password, picture, role, address, propertyType, bedrooms, bathrooms, lat, lng, onboardingComplete) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
+        [newUser.id, newUser.name, newUser.email, newUser.password, newUser.picture, newUser.role, newUser.address, newUser.propertyType, newUser.bedrooms, newUser.bathrooms, newUser.lat, newUser.lng, newUser.onboardingComplete]);
 
       const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
         expiresIn: 86400, // 24 hours
@@ -191,8 +194,8 @@ async function initializeApp() {
       const cleanerResult = await dbPool.query('SELECT * FROM cleaners WHERE id = $1', [req.params.id]);
       const cleaner = cleanerResult.rows[0];
       if (cleaner) {
-        const reviewsResponse = await axios.get(`http://review-service:3007/api/reviews/cleaner/${cleaner.id}`);
-        cleaner.reviews = reviewsResponse.data;
+        // const reviewsResponse = await axios.get(`http://review-service:3007/api/reviews/cleaner/${cleaner.id}`);
+        // cleaner.reviews = reviewsResponse.data;
         res.json(cleaner);
       } else {
           res.status(404).send('Cleaner not found');
@@ -224,7 +227,7 @@ async function initializeApp() {
       await dbPool.query('INSERT INTO cleaners (id, name, picture, rating, hourlyRate, services, location_lat, location_lng) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', 
         [newCleaner.id, newCleaner.name, newCleaner.picture, newCleaner.rating, newCleaner.hourlyRate, newCleaner.services, newCleaner.location_lat, newCleaner.location_lng]);
       
-      await indexCleaner(newCleaner);
+      // await indexCleaner(newCleaner);
 
       res.status(201).json(newCleaner);
     } catch (error) {
@@ -257,7 +260,7 @@ async function initializeApp() {
         await dbPool.query('UPDATE cleaners SET name = $1, picture = $2, rating = $3, hourlyRate = $4, services = $5, location_lat = $6, location_lng = $7 WHERE id = $8', 
           [updatedCleaner.name, updatedCleaner.picture, updatedCleaner.rating, updatedCleaner.hourlyRate, updatedCleaner.services, updatedCleaner.location_lat, updatedCleaner.location_lng, req.params.id]);
         
-        await indexCleaner(updatedCleaner);
+        // await indexCleaner(updatedCleaner);
 
         res.json(updatedCleaner);
       } else {
@@ -278,7 +281,7 @@ async function initializeApp() {
 
       const { address, propertyType, bedrooms, bathrooms, lat, lng } = value;
 
-      await dbPool.query('UPDATE users SET address = $1, propertyType = $2, bedrooms = $3, bathrooms = $4, lat = $5, lng = $6, onboardingComplete = 1 WHERE id = $7', 
+      await dbPool.query('UPDATE users SET address = $1, propertyType = $2, bedrooms = $3, bathrooms = $4, lat = $5, lng = $6, onboardingComplete = true WHERE id = $7',
         [address, propertyType, bedrooms, bathrooms, lat, lng, req.userId]);
 
       res.status(200).send({ message: 'Client onboarding complete' });

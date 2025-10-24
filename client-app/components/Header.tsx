@@ -10,9 +10,9 @@ interface HeaderProps {
     user: User | null;
     /**
      * Callback function to handle navigation to different pages.
-     * @param {'home' | 'dashboard' | 'settings' | 'messages'} page - The target page.
+     * @param {'home' | 'dashboard' | 'settings' | 'messages' | 'profile'} page - The target page.
      */
-    onNavigate: (page: 'home' | 'dashboard' | 'settings' | 'messages') => void;
+    onNavigate: (page: 'home' | 'dashboard' | 'settings' | 'messages' | 'profile') => void;
     /** Callback function to toggle the visibility of the main dashboard. */
     onToggleDashboard: () => void;
     /** Callback function invoked with the search term as the user types. */
@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({ user, onNavigate, onToggleDashboard, on
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
-  const handleNav = (page: 'home' | 'dashboard' | 'settings' | 'messages') => {
+  const handleNav = (page: 'home' | 'dashboard' | 'settings' | 'messages' | 'profile') => {
     onNavigate(page);
     setIsDropdownOpen(false);
   }
@@ -127,6 +127,7 @@ const Header: React.FC<HeaderProps> = ({ user, onNavigate, onToggleDashboard, on
                         <p className="text-sm text-gray-500 truncate">{user.email}</p>
                       </div>
                       <button onClick={() => handleNav('dashboard')} className="w-full text-left block px-4 py-2 text-gray-700 hover:bg-base-200">Dashboard</button>
+                      <button onClick={() => handleNav('profile')} className="w-full text-left block px-4 py-2 text-gray-700 hover:bg-base-200">Profile</button>
                        <button onClick={() => handleNav('messages')} className="w-full text-left block px-4 py-2 text-gray-700 hover:bg-base-200">Messages</button>
                        <button onClick={onLogout} className="w-full text-left block px-4 py-2 text-gray-700 hover:bg-base-200">Logout</button>
                     </div>

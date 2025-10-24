@@ -272,12 +272,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, searchTerm, onBookingCr
                         />
                     ))}
                 </div>
-                {cleaners.length === 0 && (
-                    <div className="text-center py-20">
-                        <h3 className="text-xl font-semibold text-neutral-focus">No Cleaners Found</h3>
-                        <p className="text-slate-500 mt-2">Try adjusting your filters or search term to see more results.</p>
-                    </div>
-                )}
+
             </div>
         </div>
 
