@@ -25,10 +25,10 @@ app.use(cors());
 
 // Proxy for HTTP services
 app.use('/api/search', createProxyMiddleware({ target: 'http://search-service:3001', changeOrigin: true }));
-app.use('/api/cleaners', verifyToken, createProxyMiddleware({ target: 'http://localhost:3002', changeOrigin: true }));
+app.use('/api/cleaners', verifyToken, createProxyMiddleware({ target: 'http://cleaner-service:3002', changeOrigin: true }));
 app.use('/api/bookings', verifyToken, createProxyMiddleware({ target: 'http://booking-service:3003', changeOrigin: true }));
-app.use('/api/auth', createProxyMiddleware({ target: 'http://localhost:3002', changeOrigin: true }));
-app.use('/api/onboarding', verifyToken, createProxyMiddleware({ target: 'http://localhost:3002', changeOrigin: true }));
+app.use('/api/auth', createProxyMiddleware({ target: 'http://cleaner-service:3002', changeOrigin: true }));
+app.use('/api/onboarding', verifyToken, createProxyMiddleware({ target: 'http://cleaner-service:3002', changeOrigin: true }));
 app.use('/api/reviews', verifyToken, createProxyMiddleware({ target: 'http://review-service:3007', changeOrigin: true }));
 app.use('/api/payments', verifyToken, createProxyMiddleware({ target: 'http://payment-service:3009', changeOrigin: true }));
 app.use('/api/favorites', verifyToken, createProxyMiddleware({ target: 'http://favorites-service:3011', changeOrigin: true }));
