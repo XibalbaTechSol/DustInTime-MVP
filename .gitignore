@@ -25,3 +25,7 @@ dist-ssr
 
 .gemini/
 gha-creds-*.json
+
+# Environment variables
+.env
+services/*/.env
