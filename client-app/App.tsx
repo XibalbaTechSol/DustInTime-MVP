@@ -8,6 +8,7 @@ import RegisterPage from './components/RegisterPage';
 import SplashScreen from './components/SplashScreen';
 import ClientOnboarding from './components/ClientOnboarding';
 import UserProfilePage from './components/UserProfilePage';
+import ProfilePage from './components/ProfilePage';
 
 // Statically import all page components to resolve module loading errors.
 import CleanerProfilePage from './components/CleanerProfilePage';
@@ -41,7 +42,11 @@ const App: React.FC = () => {
           const userData = await response.json();
           setUser(userData);
           setIsAuthenticated(true);
-          setPage('home');
+          if (userData.role === 'cleaner' || userData.onboardingComplete) {
+            setPageState({ page: 'home' });
+          } else {
+            setPageState({ page: 'clientOnboarding' });
+          }
         } else {
           localStorage.removeItem('token');
           setIsAuthenticated(false);
@@ -89,9 +94,9 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchCleaners = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/search?q=${searchTerm}`);
-        const data = await response.json();
-        setCleaners(data);
+        // const response = await fetch(`${BASE_URL}/api/search?q=${searchTerm}`);
+        // const data = await response.json();
+        // setCleaners(data);
       } catch (error) {
         console.error('Error searching for cleaners:', error);
       }
@@ -100,7 +105,7 @@ const App: React.FC = () => {
     if (isAuthenticated) {
       fetchCleaners();
     }
-  }, [searchTerm, isAuthenticated]);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -276,7 +281,13 @@ const App: React.FC = () => {
                 handleNavigate('home');
                 return null;
             }
-            return <UserProfilePage user={user} onUpdateProfile={handleUpdateProfile} onBack={() => handleNavigate('dashboard')} />;
+            return <UserProfilePage user={user} onUpdateProfile={handleUpdateProfile} onBack={() => handleNavigate('dashboard')} onNavigate={handleNavigate} />;
+        case 'profile':
+            if (!user) {
+                handleNavigate('home');
+                return null;
+            }
+            return <ProfilePage user={user} onNavigate={handleNavigate} onOnboardingComplete={() => handleNavigate('home')} />;
 
         default:
             return <HomePage

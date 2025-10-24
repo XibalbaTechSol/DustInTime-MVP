@@ -1,4 +1,6 @@
 const { Pool } = require('pg');
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 const pool = new Pool({
   user: process.env.DB_USER || 'user',
@@ -23,7 +25,7 @@ async function setupDb() {
       bathrooms INTEGER,
       lat REAL,
       lng REAL,
-      onboardingComplete INTEGER DEFAULT 0
+      onboardingComplete BOOLEAN DEFAULT false
     );
 
     CREATE TABLE IF NOT EXISTS cleaners (

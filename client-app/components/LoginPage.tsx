@@ -59,6 +59,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigateToRegis
                         </label>
                         <input
                             type="email"
+                            name="email"
                             placeholder="Email Address"
                             className="w-full input input-bordered"
                             value={email}
@@ -72,6 +73,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigateToRegis
                         </label>
                         <input
                             type="password"
+                            name="password"
                             placeholder="Enter Password"
                             className="w-full input input-bordered"
                             value={password}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { User, ClientProfile } from '../types';
+import { BASE_URL } from '../constants';
 
 interface ClientOnboardingProps {
   user: User;
@@ -25,11 +26,11 @@ const ClientOnboarding: React.FC<ClientOnboardingProps> = ({ user, onOnboardingC
       const lat = 0; // Placeholder
       const lng = 0; // Placeholder
 
-      const response = await fetch('/api/onboarding/client', {
+      const response = await fetch(`${BASE_URL}/api/onboarding/client`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: localStorage.getItem('token') || '',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({
           address, propertyType, bedrooms, bathrooms, lat, lng
@@ -60,6 +61,7 @@ const ClientOnboarding: React.FC<ClientOnboardingProps> = ({ user, onOnboardingC
             </label>
             <input
               type="text"
+              name="address"
               placeholder="Your Address"
               className="w-full input input-bordered"
               value={address}
@@ -73,6 +75,7 @@ const ClientOnboarding: React.FC<ClientOnboardingProps> = ({ user, onOnboardingC
             </label>
             <select
               className="w-full select select-bordered"
+              name="propertyType"
               value={propertyType}
               onChange={(e) => setPropertyType(e.target.value as "Apartment" | "House" | "Townhouse" | "Other")}
             >
@@ -88,6 +91,7 @@ const ClientOnboarding: React.FC<ClientOnboardingProps> = ({ user, onOnboardingC
             </label>
             <input
               type="number"
+              name="bedrooms"
               placeholder="Number of Bedrooms"
               className="w-full input input-bordered"
               value={bedrooms}
@@ -102,6 +106,7 @@ const ClientOnboarding: React.FC<ClientOnboardingProps> = ({ user, onOnboardingC
             </label>
             <input
               type="number"
+              name="bathrooms"
               placeholder="Number of Bathrooms"
               className="w-full input input-bordered"
               value={bathrooms}
@@ -114,6 +119,11 @@ const ClientOnboarding: React.FC<ClientOnboardingProps> = ({ user, onOnboardingC
           <div>
             <button type="submit" className="w-full btn btn-primary" disabled={loading}>
               {loading ? 'Saving...' : 'Complete Onboarding'}
+            </button>
+          </div>
+          <div className="text-center">
+            <button onClick={onOnboardingComplete} className="link link-primary">
+              Skip for now
             </button>
           </div>
         </form>
